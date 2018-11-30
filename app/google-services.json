@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "561846620666",
+    "firebase_url": "https://messagingapp-db3e5.firebaseio.com",
+    "project_id": "messagingapp-db3e5",
+    "storage_bucket": "messagingapp-db3e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561846620666:android:f6181ab69adfc2d5",
+        "android_client_info": {
+          "package_name": "com.invogen.messagingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "561846620666-m7bm3in3vl89cdcl4gs3g6nnp682lsim.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.invogen.messagingapp",
+            "certificate_hash": "4cd456623bf70b4c0488400d0f357e74c0cc1a27"
+          }
+        },
+        {
+          "client_id": "561846620666-u09u2ttqb1bla54g0d7flnkb0m7ib3ds.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPrpnaioTWzDmiQej5amoNC4cGfmPO2-M"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "561846620666-u09u2ttqb1bla54g0d7flnkb0m7ib3ds.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

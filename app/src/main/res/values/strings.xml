@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">AI Eye</string>
+
+    <string name="sign_out">Sign Out</string>
+    <string name="send_button_label">Send</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--// main activity viewer-->
+    <string name="capture_btn_text">Start Viewer</string>
+
+
+</resources>
