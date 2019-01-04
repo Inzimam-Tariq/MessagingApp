@@ -8,8 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
@@ -29,19 +27,19 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
 
         FriendlyMessage message = getItem(position);
 
-        boolean isPhoto = message.getPhotoUrl() != null;
-        if (isPhoto) {
-            messageTextView.setVisibility(View.GONE);
-            photoImageView.setVisibility(View.VISIBLE);
-            Picasso.get().load(message.getPhotoUrl()).into(photoImageView);
-//            Glide.with(photoImageView.getContext())
-//                    .load(message.getPhotoUrl())
-//                    .into(photoImageView);
-        } else {
-            messageTextView.setVisibility(View.VISIBLE);
-            photoImageView.setVisibility(View.GONE);
-            messageTextView.setText(message.getText());
-        }
+//        boolean isPhoto = message.getPhotoUrl() != null;
+//        if (isPhoto) {
+//            messageTextView.setVisibility(View.GONE);
+//            photoImageView.setVisibility(View.VISIBLE);
+//            Picasso.get().load(message.getPhotoUrl()).into(photoImageView);
+////            Glide.with(photoImageView.getContext())
+////                    .load(message.getPhotoUrl())
+////                    .into(photoImageView);
+//        } else {
+//            messageTextView.setVisibility(View.VISIBLE);
+//            photoImageView.setVisibility(View.GONE);
+//            messageTextView.setText(message.getText());
+//        }
         authorTextView.setText(message.getName());
 
         return convertView;

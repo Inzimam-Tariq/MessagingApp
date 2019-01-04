@@ -1,10 +1,12 @@
 package com.invogen.messagingapp;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AppUtils {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -14,17 +16,12 @@ public class AppUtils {
         activity.finish();
     }
 
-    public boolean isUserLoggedIn() {
+    public static String getTime() {
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    userLoggedStatus = true;
-                }
-            }
-        };
-        return userLoggedStatus;
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + c);
+
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH-mm");
+        return df.format(c);
     }
 }

@@ -59,7 +59,7 @@ public class UserTypeActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             String userType = dataSnapshot.child("user_type").getValue().toString();
-                            AppConstants.USER_TYPE = userType;
+                            AppConstants.setUserType(userType);
                             if (userType.equals("controller")) {
                                 controllerClicked(new View(mContext));
                             } else {
@@ -97,15 +97,15 @@ public class UserTypeActivity extends AppCompatActivity {
 
     public void controllerClicked(View view) {
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        AppConstants.USER_TYPE = "controller";
-        Toast.makeText(mContext, "User Type Controller!", Toast.LENGTH_LONG).show();
+        AppConstants.setUserType("controller");
+        Toast.makeText(mContext, "Users Type Controller!", Toast.LENGTH_LONG).show();
         AppUtils.finishActivity(UserTypeActivity.this);
     }
 
     public void viewerClicked(View view) {
         startActivity(new Intent(getApplicationContext(), MainActivityViewer.class));
-        AppConstants.USER_TYPE = "viewer";
-        Toast.makeText(mContext, "User Type Viewer!", Toast.LENGTH_LONG).show();
+        AppConstants.setUserType("viewer");
+        Toast.makeText(mContext, "Users Type Viewer!", Toast.LENGTH_LONG).show();
         AppUtils.finishActivity(UserTypeActivity.this);
     }
 

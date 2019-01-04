@@ -16,6 +16,8 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/logo1_1"
@@ -35,7 +37,6 @@
         <activity android:name=".ScanQRCodeActivity" />
         <activity android:name=".UserTypeActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".MessagingMainActivity" />
 
         <!-- <service android:name=".java.MyFirebaseMessagingService"> -->
         <!-- <intent-filter> -->
@@ -43,7 +44,7 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity android:name=".MainActivityViewer" />
-        <activity android:name=".AddProfileActivity"></activity>
+        <activity android:name=".AddProfileActivity" />
     </application>
 
 </manifest>

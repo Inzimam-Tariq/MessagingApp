@@ -27,6 +27,7 @@ public class FriendsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private DatabaseReference dbReference;
+    private FirebaseRecyclerAdapter<Users, FindFriendsViewHolder> adapter;
 
     public FriendsFragment() {
         // Required empty public constructor
@@ -42,8 +43,39 @@ public class FriendsFragment extends Fragment {
 
 
         initViews(view);
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        FirebaseRecyclerOptions<Users> options =
+                new FirebaseRecyclerOptions.Builder<Users>()
+                        .setQuery(dbReference, Users.class)
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<Users, FindFriendsViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull FindFriendsViewHolder holder, int position,
+                                            @NonNull Users model) {
+                holder.username.setText(model.getUser_name());
+                holder.userStatus.setText(model.getUser_status());
+                if (!model.getUser_image().isEmpty())
+                    Picasso.get().load(model.getUser_image())
+                            .placeholder(R.drawable.default_user_img)
+                            .error(R.drawable.default_user_img)
+                            .resize(85, 85)
+                            .into(holder.profileImageView);
+            }
+
+            @NonNull
+            @Override
+            public FindFriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display_layout, parent, false);
+
+                return new FindFriendsViewHolder(view);
+            }
+        };
+        mRecyclerView.setAdapter(adapter);
+        adapter.startListening();
 
         return view;
     }
@@ -55,36 +87,25 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        if (adapter != null) {
+            adapter.startListening();
+        }
+    }
 
-        FirebaseRecyclerOptions<Contacts> options =
-                new FirebaseRecyclerOptions.Builder<Contacts>()
-                        .setQuery(dbReference, Contacts.class)
-                        .build();
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+    }
 
-        FirebaseRecyclerAdapter<Contacts, FindFriendsViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Contacts, FindFriendsViewHolder>(options) {
-                    @Override
-                    protected void onBindViewHolder(@NonNull FindFriendsViewHolder holder, int position, @NonNull Contacts model) {
-                        holder.username.setText(model.getUser_name());
-                        holder.userStatus.setText(model.getUser_status());
-                        Picasso.get().load(model.getUser_image())
-                                .placeholder(R.drawable.default_user_img)
-                                .error(R.drawable.default_user_img)
-                                .resize(85, 85)
-                                .into(holder.profileImageView);
-                    }
-
-                    @NonNull
-                    @Override
-                    public FindFriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_display_layout, parent, false);
-
-                        return new FindFriendsViewHolder(view);
-                    }
-                };
-        mRecyclerView.setAdapter(adapter);
-        adapter.startListening();
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            adapter.startListening();
+        }
     }
 
     public static class FindFriendsViewHolder extends RecyclerView.ViewHolder {

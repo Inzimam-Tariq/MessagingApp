@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,11 +45,13 @@ public class SplashActivity extends AppCompatActivity {
                     String userId = user.getUid();
                     mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
                             .child(userId);
+                    Log.e("Splash", userId);
                     mUserDatabaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                             String userType = dataSnapshot.child("user_type").getValue().toString();
-                            AppConstants.USER_TYPE = userType;
+                            AppConstants.setUserType(userType);
                             if (userType.equals("controller")) {
                                 startActivity(new Intent(mContext, MainActivity.class));
                                 AppUtils.finishActivity(SplashActivity.this);

@@ -95,7 +95,7 @@ public class MainActivityViewer extends AppCompatActivity {
                 Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    Toast.makeText(mContext, "User Active", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Users Active", Toast.LENGTH_SHORT).show();
                     FirebaseUserMetadata metadata = firebaseAuth.getCurrentUser().getMetadata();
                     Log.e("ActivityViewer", "\ncreation timestamp = " + metadata
                             .getCreationTimestamp() + "\nlast sign in timestamp = "
@@ -103,7 +103,7 @@ public class MainActivityViewer extends AppCompatActivity {
                     if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
                         // The user is new, show them a fancy intro screen!
                         mProfilesDBReference = mFirebaseDatabase.getReference()
-                                .child(AppConstants.PROFILE_NODE).child(user.getUid());
+                                .child(AppConstants.PROFILES_NODE).child(user.getUid());
 
                         mProfilesDBReference.child("user_name").setValue(user.getDisplayName());
                         mProfilesDBReference.child("user_image").setValue("");
@@ -118,7 +118,7 @@ public class MainActivityViewer extends AppCompatActivity {
                         mUsersDBReference.child("user_status").setValue("online");
                         mUsersDBReference.child("user_image").setValue("");
                         mUsersDBReference.child("user_email").setValue(user.getEmail());
-                        mUsersDBReference.child("user_type").setValue(AppConstants.USER_TYPE);
+                        mUsersDBReference.child("user_type").setValue(AppConstants.getUserType());
                         mUsersDBReference.child("friend_list").child("");
 
                     } else {

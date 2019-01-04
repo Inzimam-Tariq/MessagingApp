@@ -48,27 +48,31 @@ public class SettingsActivity extends AppCompatActivity {
         if (fbAuth != null) {
             if (fbAuth.getCurrentUser() != null) {
                 String userId = fbAuth.getCurrentUser().getUid();
-                dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
-                storageReference = FirebaseStorage.getInstance().getReference().child("Profile_Images");
+                dbReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.USERS_NODE)
+                        .child(userId);
+                storageReference = FirebaseStorage.getInstance().getReference().child
+                        (AppConstants.PROFILE_IMAGES_NODE);
                 dbReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                         String name = dataSnapshot.child("user_name").getValue().toString();
                         String status = dataSnapshot.child("user_status").getValue().toString();
                         String imageUrl = dataSnapshot.child("user_image").getValue().toString();
-                        String thumb_image = dataSnapshot.child("user_thumb_image").getValue().toString();
+//                        String thumb_image = dataSnapshot.child("user_thumb_image").getValue().toString();
 
                         usernameTV.setText(name);
                         statusTV.setText(status);
-                        Picasso.get()
-                                .load(imageUrl)
-                                .resize(320, 320)
-                                .fit() // use fit() and centerInside() for making it memory efficient.
-                                .centerInside()
-                                .transform(new FaceCenterCrop(10, 10))
-                                .placeholder(R.drawable.default_user_img)
-                                .error(R.drawable.default_user_img)
-                                .into(profileImageView);
+                        if (!imageUrl.isEmpty())
+                            Picasso.get()
+                                    .load(imageUrl)
+//                                    .resize(320, 320)
+                                    .fit() // use fit() and centerInside() for making it memory efficient.
+                                    .centerInside()
+                                    .transform(new FaceCenterCrop(10, 10))
+                                    .placeholder(R.drawable.default_user_img)
+                                    .error(R.drawable.default_user_img)
+                                    .into(profileImageView);
                     }
 
                     @Override
@@ -83,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
                         Intent galleryIntent = new Intent();
                         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
                         galleryIntent.setType("image/*");
-                        startActivityForResult(galleryIntent, 100);
+                        startActivityForResult(galleryIntent, AppConstants.RC_PICK_IMAGE);
                     }
                 });
             }
@@ -109,43 +113,42 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == AppConstants.RC_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
-            if (fbAuth != null) {
-                if (fbAuth.getCurrentUser() != null) {
-                    String userId = fbAuth.getCurrentUser().getUid();
-                    final StorageReference imagePath = storageReference.child(userId + ".jpg");
-                    if (imageUri != null) {
-                        imagePath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Uploading your profile image to firebase...",
-                                            Toast.LENGTH_LONG).show();
-                                    imagePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            String downloadUrl = uri.toString();
-                                            dbReference.child("user_image").setValue(downloadUrl)
-                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task<Void> task) {
-                                                            Toast.makeText(getApplicationContext(), "Profile image uploaded!",
-                                                                    Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-                                        }
-                                    });
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Error occurred while storing profile in database",
-                                            Toast.LENGTH_LONG).show();
-                                }
+
+            if (fbAuth.getCurrentUser() != null) {
+                String userId = fbAuth.getCurrentUser().getUid();
+                final StorageReference imagePath = storageReference.child(userId + ".jpg");
+                if (imageUri != null) {
+                    imagePath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Uploading your profile image to firebase...",
+                                        Toast.LENGTH_LONG).show();
+                                imagePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        dbReference.child("user_image").setValue(downloadUrl)
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        Toast.makeText(getApplicationContext(), "Profile image uploaded!",
+                                                                Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Error occurred while storing profile in database",
+                                        Toast.LENGTH_LONG).show();
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         }
-
     }
+
 }

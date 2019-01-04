@@ -20,14 +20,17 @@ public class FriendlyMessage {
     private String text;
     private String name;
     private String photoUrl;
+    private String date;
 
     public FriendlyMessage() {
+
     }
 
     public FriendlyMessage(String text, String name, String photoUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
+        date = AppUtils.getTime();
     }
 
     public String getText() {
@@ -52,5 +55,13 @@ public class FriendlyMessage {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
