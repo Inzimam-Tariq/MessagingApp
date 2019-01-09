@@ -237,6 +237,7 @@ public class ChatsFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 assert data != null;
                 Uri selectedImageUri = data.getData();
+                assert selectedImageUri != null;
                 String imgName = new File(selectedImageUri.getPath()).getName();
                 final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
                         .getTime() + imgName);
