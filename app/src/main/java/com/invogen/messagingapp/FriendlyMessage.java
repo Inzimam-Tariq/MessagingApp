@@ -21,24 +21,26 @@ public class FriendlyMessage {
     private String name;
     private String photoUrl;
     private String date;
+    private String userId;
 
     public FriendlyMessage() {
 
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl) {
-        this.text = text;
+    public FriendlyMessage(String userId, String name, String text, String photoUrl) {
+        this.userId = userId;
         this.name = name;
+        this.text = text;
         this.photoUrl = photoUrl;
         date = AppUtils.getTime();
     }
 
-    public String getText() {
-        return text;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getName() {
@@ -47,6 +49,13 @@ public class FriendlyMessage {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public String getPhotoUrl() {

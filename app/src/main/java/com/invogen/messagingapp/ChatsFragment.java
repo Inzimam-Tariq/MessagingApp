@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,11 +64,10 @@ public class ChatsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ProgressBar progressBar;
     private EditText mMessageEditText;
-    private Button mSendButton, mPhotoPickerButton;
+    private FloatingActionButton mSendButton, mPhotoPickerButton;
 
     private Context mContext;
-
-    private String mUsername;
+    private String mUsername, userId;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -75,7 +75,7 @@ public class ChatsFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
@@ -118,12 +118,14 @@ public class ChatsFragment extends Fragment {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Log.e("InsideSendBtn", "true");
                 FriendlyMessage friendlyMessage = new FriendlyMessage(
-                        mMessageEditText.getText().toString(), mUsername, null);
+                        userId, mUsername, mMessageEditText.getText().toString(), "urlhere");
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
                 // Clear input box
+                Log.e("ChatFrag SendBtn", "User Id = " + userId);
                 mMessageEditText.setText("");
+                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
             }
         });
 
@@ -133,6 +135,8 @@ public class ChatsFragment extends Fragment {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     onSignedInInitialize(user.getDisplayName());
+                    userId = user.getUid();
+                    Log.e("ChatFrag", "User Id = " + userId);
                 } else {
                     onSignedOutCleanup();
                     startActivityForResult(
@@ -162,17 +166,37 @@ public class ChatsFragment extends Fragment {
                                             @NonNull FriendlyMessage model) {
 //                Random rnd = new Random();
 //                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-//                holder.nameTV.setTextColor(color);
-                holder.nameTV.setText(model.getName());
-                holder.msgTV.setText(model.getText());
-                if (model.getDate() != null)
-                    holder.timeTV.setText(model.getDate());
-                progressBar.setVisibility(View.GONE);
+//                holder.nameTVLeft.setTextColor(color);
+                String userUid = model.getUserId();
+                Log.e("UserIdFromFirebase", "" + userUid);
+                if (userUid != null && userUid.equals(userId)) {
+                    holder.linearLayoutLeft.setVisibility(View.GONE);
+                    holder.linearLayoutRight.setVisibility(View.VISIBLE);
+                    holder.nameTVRight.setText(model.getName());
+                    holder.msgTVRight.setText(model.getText());
+                    if (model.getDate() != null)
+                        holder.timeTVRight.setText(model.getDate());
+                    progressBar.setVisibility(View.GONE);
 
-                if (model.getPhotoUrl() != null) {
-                    Log.e("ImagePathDB", model.getPhotoUrl());
-                    Picasso.get().load(model.getPhotoUrl())
-                            .into(holder.imageView);
+                    if (model.getPhotoUrl() != null) {
+                        Log.e("ImagePathDB", model.getPhotoUrl());
+                        Picasso.get().load(model.getPhotoUrl())
+                                .into(holder.imageViewRight);
+                    }
+                } else {
+                    holder.linearLayoutLeft.setVisibility(View.VISIBLE);
+                    holder.linearLayoutRight.setVisibility(View.GONE);
+                    holder.nameTVLeft.setText(model.getName());
+                    holder.msgTVLeft.setText(model.getText());
+                    if (model.getDate() != null)
+                        holder.timeTVLeft.setText(model.getDate());
+                    progressBar.setVisibility(View.GONE);
+
+                    if (model.getPhotoUrl() != null) {
+                        Log.e("ImagePathDB", model.getPhotoUrl());
+                        Picasso.get().load(model.getPhotoUrl())
+                                .into(holder.imageViewLeft);
+                    }
                 }
 //                mRecyclerView.smoothScrollToPosition(adapter.getItemCount() - 1);
             }
@@ -182,6 +206,8 @@ public class ChatsFragment extends Fragment {
             public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
                 View view1 = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout
                         .item_message, viewGroup, false);
+
+                Log.e("MainActivity", "onCreateViewHolder");
 
                 return new MessageViewHolder(view1);
             }
@@ -193,7 +219,7 @@ public class ChatsFragment extends Fragment {
 
 //        adapter.startListening();
         mRecyclerView.setAdapter(adapter);
-
+//mRecyclerView.smoothScrollToPosition(options);
         return view;
     }
 
@@ -255,7 +281,7 @@ public class ChatsFragment extends Fragment {
                                 public void onSuccess(Uri uri) {
                                     String downloadUrl = uri.toString();
                                     FriendlyMessage friendlyMessage =
-                                            new FriendlyMessage(null, mUsername, downloadUrl);
+                                            new FriendlyMessage(userId, mUsername, null, downloadUrl);
                                     mMessagesDatabaseReference.push().setValue(friendlyMessage);
                                     Toast.makeText(mContext, "DownloadURL " + downloadUrl,
                                             Toast.LENGTH_LONG).show();
@@ -289,7 +315,7 @@ public class ChatsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/jpeg");
+                intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                 startActivityForResult(Intent.createChooser(intent, "Complete action using"),
                         AppConstants.RC_PICK_IMAGE);
