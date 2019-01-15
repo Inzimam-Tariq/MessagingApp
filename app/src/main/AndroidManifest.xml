@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- OR - depends on the requiremnts-->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature
         android:name="android.hardware.camera.autofocus"
@@ -45,7 +49,6 @@
         <!-- </service> -->
         <activity android:name=".MainActivityViewer" />
         <activity android:name=".AddProfileActivity" />
-
     </application>
 
 </manifest>

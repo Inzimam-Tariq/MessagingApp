@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
+    android:background="@color/colorWhite"
     android:padding="16dp">
 
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/logo1_1"/>
+        android:src="@drawable/logo2"/>
 
 </RelativeLayout>

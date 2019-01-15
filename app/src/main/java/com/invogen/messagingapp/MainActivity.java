@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkPermissions() {
         String[] permissions = {Manifest.permission.CAMERA, Manifest.permission
-                .WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+                .WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
+                , Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS};
         Permissions.check(this/*context*/, permissions, null/*rationale*/,
                 null/*options*/, new PermissionHandler() {
                     @Override
