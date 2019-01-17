@@ -184,8 +184,11 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                     holder.linearLayoutRight.setVisibility(View.VISIBLE);
                     holder.nameTVRight.setText(model.getName());
                     String msgTxt = model.getText();
-                    if (msgTxt != null && !msgTxt.trim().isEmpty())
+                    if (msgTxt != null && !msgTxt.trim().isEmpty()) {
                         holder.msgTVRight.setText(model.getText());
+                    } else {
+                        holder.msgTVRight.setVisibility(View.GONE);
+                    }
                     if (model.getDate() != null)
                         holder.timeTVRight.setText(model.getDate());
                     progressBar.setVisibility(View.GONE);
@@ -199,7 +202,12 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                     holder.linearLayoutLeft.setVisibility(View.VISIBLE);
                     holder.linearLayoutRight.setVisibility(View.GONE);
                     holder.nameTVLeft.setText(model.getName());
-                    holder.msgTVLeft.setText(model.getText());
+                    String msgTxt = model.getText();
+                    if (msgTxt != null && !msgTxt.trim().isEmpty()) {
+                        holder.msgTVLeft.setText(model.getText());
+                    } else {
+                        holder.msgTVLeft.setVisibility(View.GONE);
+                    }
                     if (model.getDate() != null)
                         holder.timeTVLeft.setText(model.getDate());
                     progressBar.setVisibility(View.GONE);
@@ -337,7 +345,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                         name = cursor.getString(nameIndex);
 
                         FriendlyMessage friendlyMessage = new FriendlyMessage(
-                                userId, mUsername, "Name: "+name + "\nCell  #: " + phoneNo, null);
+                                userId, mUsername, "Name: " + name + "\nCell  #: " + phoneNo, null);
                         mMessagesDatabaseReference.push().setValue(friendlyMessage);
 
                         mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());

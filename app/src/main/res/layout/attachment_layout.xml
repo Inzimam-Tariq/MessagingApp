@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Camera"
+                android:text="Videos"
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
 
@@ -98,7 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Audio"
+                android:text="Audios"
                 android:textColor="@color/colorWhite" />
         </LinearLayout>
 
