@@ -174,9 +174,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
             @Override
             protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position,
                                             @NonNull FriendlyMessage model) {
-//                Random rnd = new Random();
-//                int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-//                holder.nameTVLeft.setTextColor(color);
+
                 String userUid = model.getUserId();
                 Log.e("UserIdFromFirebase", "" + userUid);
                 if (userUid != null && userUid.equals(userId)) {
@@ -233,7 +231,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
         mRecyclerView = view.findViewById(R.id.recycle_view);
         progressBar = view.findViewById(R.id.progressBar);
         attachmentBtn = view.findViewById(R.id.btn_attachment);
-        cameraBtn = view.findViewById(R.id.btn_camera_in_tv);
+        cameraBtn = view.findViewById(R.id.btn_camera_in_et);
         mMessageEditText = view.findViewById(R.id.messageEditText);
         mSendButton = view.findViewById(R.id.sendButton);
 
@@ -286,45 +284,44 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AppConstants.RC_PICK_IMAGE) {
-            if (resultCode == RESULT_OK) {
-                ArrayList<ImageFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_IMAGE);
-                assert data != null;
-                Uri selectedImageUri = data.getData();
-                assert selectedImageUri != null;
-                String imgName = new File(selectedImageUri.getPath()).getName();
-                final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
-                        .getTime() + imgName);
 
-                // upload file to Firebase Storage
-                photoRef.putFile(selectedImageUri).addOnCompleteListener(new OnCompleteListener<UploadTask
-                        .TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(mContext, "Uploading your profile image to firebase...",
-                                    Toast.LENGTH_LONG).show();
-                            photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    String downloadUrl = uri.toString();
-                                    FriendlyMessage friendlyMessage =
-                                            new FriendlyMessage(userId, mUsername, null, downloadUrl);
-                                    mMessagesDatabaseReference.push().setValue(friendlyMessage);
-                                    Toast.makeText(mContext, "DownloadURL " + downloadUrl,
-                                            Toast.LENGTH_LONG).show();
-                                    Log.e("DownloadURL", downloadUrl);
-                                }
-                            });
-                        } else {
-                            Toast.makeText(mContext, "Error occurred while storing profile in " +
-                                            "database",
-                                    Toast.LENGTH_LONG).show();
+        if (data != null)
+            if (resultCode == RESULT_OK) {
+                if (requestCode == Constant.REQUEST_CODE_PICK_IMAGE) {
+                    ArrayList<ImageFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_IMAGE);
+
+                    final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
+                            .getTime() + list.get(0).getName());
+                    Uri file = Uri.fromFile(new File(list.get(0).getPath()));
+
+                    // upload file to Firebase Storage
+                    photoRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
+                            .TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(mContext, "Uploading your profile image to firebase...",
+                                        Toast.LENGTH_LONG).show();
+                                photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        String downloadUrl = uri.toString();
+                                        FriendlyMessage friendlyMessage =
+                                                new FriendlyMessage(userId, mUsername, null, downloadUrl);
+                                        mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                                        Log.e("DownloadURL", downloadUrl);
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(mContext, "Error occurred while storing profile in " +
+                                                "database",
+                                        Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
-        }
 
     }
 
@@ -433,9 +430,11 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 revealAttachments();
                 break;
             }
-            case R.id.btn_camera_in_tv: {
+            case R.id.btn_camera_in_et: {
                 Log.e(TAG, "Clicked camera");
                 createDirectoryAndOpenCamera();
+                reveal = true;
+                revealAttachments();
                 break;
             }
             case R.id.btn_document: {
@@ -443,8 +442,10 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
 //                openItemPicker("doc/*", AppConstants.RC_PICK_IMAGE);
                 intent = new Intent(mContext, NormalFilePickActivity.class);
                 intent.putExtra(Constant.MAX_NUMBER, 9);
-                intent.putExtra(NormalFilePickActivity.SUFFIX, new String[] {"xlsx", "xls", "doc", "docx", "ppt", "pptx", "pdf"});
+                intent.putExtra(NormalFilePickActivity.SUFFIX, new String[]{"xlsx", "xls", "doc", "docx", "ppt", "pptx", "pdf"});
                 startActivityForResult(intent, Constant.REQUEST_CODE_PICK_FILE);
+                reveal = true;
+                revealAttachments();
                 break;
             }
             case R.id.btn_video: {
@@ -454,6 +455,8 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(IS_NEED_CAMERA, true);
                 intent.putExtra(Constant.MAX_NUMBER, 9);
                 startActivityForResult(intent, Constant.REQUEST_CODE_PICK_VIDEO);
+                reveal = true;
+                revealAttachments();
                 break;
             }
             case R.id.btn_gallery: {
@@ -462,6 +465,8 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(Constant.MAX_NUMBER, 9);
                 startActivityForResult(intent, Constant.REQUEST_CODE_PICK_IMAGE);
                 Log.e(TAG, "Clicked 4");
+                reveal = true;
+                revealAttachments();
 //                openItemPicker("image/*", AppConstants.RC_PICK_IMAGE);
                 break;
             }
@@ -472,17 +477,23 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 intent.putExtra(IS_NEED_RECORDER, true);
                 intent.putExtra(Constant.MAX_NUMBER, 9);
                 startActivityForResult(intent, Constant.REQUEST_CODE_PICK_AUDIO);
+                reveal = true;
+                revealAttachments();
                 break;
             }
             case R.id.btn_location: {
                 Log.e(TAG, "Clicked 6");
-                openItemPicker("location/*", AppConstants.RC_PICK_IMAGE);
+//                openItemPicker("location/*", AppConstants.RC_PICK_IMAGE);
+                reveal = true;
+                revealAttachments();
                 break;
             }
             case R.id.btn_contact: {
                 Log.e(TAG, "Clicked 7");
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent, AppConstants.RC_PICK_IMAGE);
+                reveal = true;
+                revealAttachments();
 //                openItemPicker("contact/*", AppConstants.RC_PICK_IMAGE);
                 break;
             }

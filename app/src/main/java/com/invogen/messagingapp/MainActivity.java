@@ -132,9 +132,7 @@ public class MainActivity extends AppCompatActivity {
                             AppConstants.RC_SIGN_IN);
                 }
             }
-        }
-
-        ;
+        };
     }
 
     private void checkPermissions() {

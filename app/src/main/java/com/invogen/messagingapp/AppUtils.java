@@ -2,8 +2,10 @@ package com.invogen.messagingapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 public class AppUtils {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -36,6 +39,12 @@ public class AppUtils {
 
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH-mm");
         return df.format(c);
+    }
+
+    public static int getRandomColor(View view) {
+        Random rnd = new Random();
+        //                holder.nameTVLeft.setTextColor(color);
+        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
 }
