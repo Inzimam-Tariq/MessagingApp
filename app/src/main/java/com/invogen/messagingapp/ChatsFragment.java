@@ -59,6 +59,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 import static com.vincent.filepicker.activity.AudioPickActivity.IS_NEED_RECORDER;
@@ -96,6 +98,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
     private Context mContext;
     private String mUsername, userId;
     private String phoneNo, name;
+    private int i;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -177,45 +180,77 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
             protected void onBindViewHolder(@NonNull MessageViewHolder holder, int position,
                                             @NonNull FriendlyMessage model) {
 
-                String userUid = model.getUserId();
-                Log.e("UserIdFromFirebase", "" + userUid);
-                if (userUid != null && userUid.equals(userId)) {
-                    holder.linearLayoutLeft.setVisibility(View.GONE);
-                    holder.linearLayoutRight.setVisibility(View.VISIBLE);
-                    holder.nameTVRight.setText(model.getName());
-                    String msgTxt = model.getText();
-                    if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                        holder.msgTVRight.setText(model.getText());
-                    } else {
-                        holder.msgTVRight.setVisibility(View.GONE);
-                    }
-                    if (model.getDate() != null)
-                        holder.timeTVRight.setText(model.getDate());
-                    progressBar.setVisibility(View.GONE);
+                String userUid = model.getSenderId();
+                Log.e(TAG, "" + userUid);
+                String msgType = model.getMsgType();
+                Log.e(TAG, "" + msgType);
+                if (msgType.equals("plain")) {
+                    if (userUid != null && userUid.equals(userId)) {
+                        holder.linearLayoutLeft.setVisibility(View.GONE);
+                        holder.linearLayoutRight.setVisibility(View.VISIBLE);
+                        holder.nameTVRight.setText(model.getSenderName());
+                        String msgTxt = model.getMsgText();
+                        if (msgTxt != null && !msgTxt.trim().isEmpty()) {
+                            holder.msgTVRight.setText(msgTxt);
+                        } else {
+                            holder.msgTVRight.setVisibility(View.GONE);
+                        }
+                        holder.timeTVRight.setText(model.getMsgDate());
+                        progressBar.setVisibility(View.GONE);
 
-                    if (model.getPhotoUrl() != null) {
-                        Log.e("ImagePathDB", model.getPhotoUrl());
-                        Picasso.get().load(model.getPhotoUrl())
-                                .into(holder.imageViewRight);
+                    } else {
+                        holder.linearLayoutLeft.setVisibility(View.VISIBLE);
+                        holder.linearLayoutRight.setVisibility(View.GONE);
+                        holder.nameTVLeft.setText(model.getSenderName());
+                        String msgTxt = model.getMsgText();
+                        if (msgTxt != null && !msgTxt.trim().isEmpty()) {
+                            holder.msgTVLeft.setText(msgTxt);
+                        } else {
+                            holder.msgTVLeft.setVisibility(View.GONE);
+                        }
+                        if (model.getMsgDate() != null)
+                            holder.timeTVLeft.setText(model.getMsgDate());
+                        progressBar.setVisibility(View.GONE);
+
                     }
                 } else {
-                    holder.linearLayoutLeft.setVisibility(View.VISIBLE);
-                    holder.linearLayoutRight.setVisibility(View.GONE);
-                    holder.nameTVLeft.setText(model.getName());
-                    String msgTxt = model.getText();
-                    if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                        holder.msgTVLeft.setText(model.getText());
-                    } else {
-                        holder.msgTVLeft.setVisibility(View.GONE);
-                    }
-                    if (model.getDate() != null)
-                        holder.timeTVLeft.setText(model.getDate());
-                    progressBar.setVisibility(View.GONE);
+                    holder.msgTVRight.setVisibility(View.GONE);
+                    holder.msgTVLeft.setVisibility(View.GONE);
+                    if (msgType.equals("image")) {
+                        FileMessageAttributes fileMessageAttributes = model
+                                .getFileMessageAttributesMap().get("fileProperties");
+                        if (userUid != null && userUid.equals(userId)) {
+                            holder.linearLayoutLeft.setVisibility(View.GONE);
+                            holder.linearLayoutRight.setVisibility(View.VISIBLE);
 
-                    if (model.getPhotoUrl() != null) {
-                        Log.e("ImagePathDB", model.getPhotoUrl());
-                        Picasso.get().load(model.getPhotoUrl())
+                            holder.nameTVRight.setText(model.getSenderName());
+                            holder.timeTVRight.setText(model.getMsgDate());
+                            progressBar.setVisibility(View.GONE);
+
+                    if (fileMessageAttributes.getFilePath() != null) {
+                        Log.e("ImagePathDB", fileMessageAttributes.getFilePath());
+                        Picasso.get().load(fileMessageAttributes.getFilePath())
+                                .into(holder.imageViewRight);
+                    }
+                        } else {
+                            holder.linearLayoutLeft.setVisibility(View.VISIBLE);
+                            holder.linearLayoutRight.setVisibility(View.GONE);
+                            holder.nameTVLeft.setText(model.getSenderName());
+//                            String msgTxt = model.getMsgText();
+//                            if (msgTxt != null && !msgTxt.trim().isEmpty()) {
+//                                holder.msgTVLeft.setText(msgTxt);
+//                            } else {
+//                                holder.msgTVLeft.setVisibility(View.GONE);
+//                            }
+                            holder.timeTVLeft.setText(model.getMsgDate());
+                            progressBar.setVisibility(View.GONE);
+
+                    if (fileMessageAttributes.getFilePath() != null) {
+                        Log.e("ImagePathDB", fileMessageAttributes.getFilePath());
+                        Picasso.get().load(fileMessageAttributes.getFilePath())
                                 .into(holder.imageViewLeft);
+                    }
+                        }
                     }
                 }
             }
@@ -300,38 +335,47 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
         if (data != null)
             if (resultCode == RESULT_OK) {
                 if (requestCode == Constant.REQUEST_CODE_PICK_IMAGE) {
-                    ArrayList<ImageFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_IMAGE);
+                    final ArrayList<ImageFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_IMAGE);
 
-                    final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
-                            .getTime() + list.get(0).getName());
-                    Uri file = Uri.fromFile(new File(list.get(0).getPath()));
+                    for (i = 0; i < list.size(); i++) {
+                        final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
+                                .getTime() + list.get(i).getName());
+                        Uri file = Uri.fromFile(new File(list.get(i).getPath()));
 
-                    // upload file to Firebase Storage
-                    photoRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
-                            .TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(mContext, "Uploading your profile image to firebase...",
-                                        Toast.LENGTH_LONG).show();
-                                photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        String downloadUrl = uri.toString();
-                                        FriendlyMessage friendlyMessage =
-                                                new FriendlyMessage(userId, mUsername, null, downloadUrl);
-                                        mMessagesDatabaseReference.push().setValue(friendlyMessage);
+                        // upload file to Firebase Storage
+                        photoRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
+                                .TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(mContext, "Uploading your profile image to firebase...",
+                                            Toast.LENGTH_LONG).show();
+                                    photoRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String downloadUrl = uri.toString();
 
-                                        Log.e("DownloadURL", downloadUrl);
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(mContext, "Error occurred while storing profile in " +
-                                                "database",
-                                        Toast.LENGTH_LONG).show();
+                                            Map<String, FileMessageAttributes> fileMessageAttributesMap
+                                                    = new HashMap<>();
+                                            fileMessageAttributesMap.put("fileProperties", new
+                                                    FileMessageAttributes(list.get(0).getName(),
+                                                    downloadUrl, list.get(0).getSize()));
+                                            FriendlyMessage friendlyMessage =
+                                                    new FriendlyMessage(userId, mUsername, "image",
+                                                            fileMessageAttributesMap);
+                                            mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                                            Log.e("DownloadURL", downloadUrl);
+                                        }
+                                    });
+                                } else {
+                                    Toast.makeText(mContext, "Error occurred while storing profile in " +
+                                                    "database",
+                                            Toast.LENGTH_LONG).show();
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 } else if (requestCode == AppConstants.RC_PICK_CONTACT) {
 
                     Uri uri = data.getData();
@@ -344,11 +388,10 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                         phoneNo = cursor.getString(phoneIndex);
                         name = cursor.getString(nameIndex);
 
-                        FriendlyMessage friendlyMessage = new FriendlyMessage(
-                                userId, mUsername, "Name: " + name + "\nCell  #: " + phoneNo, null);
+                        FriendlyMessage friendlyMessage =
+                                new FriendlyMessage(userId, mUsername,
+                                        "Name: " + name + "\nCell  #: " + phoneNo);
                         mMessagesDatabaseReference.push().setValue(friendlyMessage);
-
-                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
 
                         Log.e("onActivityResult()", phoneIndex + " " + phoneNo + " " + nameIndex + " " + name);
                     }
@@ -535,8 +578,16 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 Log.e("InsideSendBtn", "true");
                 String msgText = mMessageEditText.getText().toString();
 
-                FriendlyMessage friendlyMessage = new FriendlyMessage(
-                        userId, mUsername, msgText, "urlhere");
+//                Map<String, FileMessageAttributes> fileProperties
+//                        = new HashMap<>();
+//                fileProperties.put("fileProperties", new
+//                        FileMessageAttributes("fileNameHere",
+//                        "filePathHere", 1399));
+
+                FriendlyMessage friendlyMessage =
+                        new FriendlyMessage(userId, mUsername,
+                                msgText);
+
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
                 // Clear input box
                 Log.e("ChatFrag SendBtn", "User Id = " + userId);

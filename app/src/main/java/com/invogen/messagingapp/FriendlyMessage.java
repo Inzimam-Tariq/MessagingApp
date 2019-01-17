@@ -15,62 +15,83 @@
  */
 package com.invogen.messagingapp;
 
+import java.util.List;
+import java.util.Map;
+
 public class FriendlyMessage {
 
-    private String text;
-    private String name;
-    private String photoUrl;
-    private String date;
-    private String userId;
+    private String senderId;
+    private String senderName;
+    private String msgDate;
+    private String msgType;
+    private String msgText;
+
+    private Map<String, FileMessageAttributes> fileMessageAttributesMap;
 
     public FriendlyMessage() {
-
     }
 
-    public FriendlyMessage(String userId, String name, String text, String photoUrl) {
-        this.userId = userId;
-        this.name = name;
-        this.text = text;
-        this.photoUrl = photoUrl;
-        date = AppUtils.getTime();
+    public FriendlyMessage(String senderId, String senderName, String msgText) {
+        this.senderId = senderId;
+        this.senderName = senderName;
+        this.msgText = msgText;
+        this.msgDate = AppUtils.getTime();
     }
 
-    public String getUserId() {
-        return userId;
+    public FriendlyMessage(String senderId, String senderName, String msgType,
+                           Map<String, FileMessageAttributes> fileMessageAttributesMap) {
+        this.senderId = senderId;
+        this.senderName = senderName;
+        this.msgDate = AppUtils.getTime();
+        this.msgType = msgType;
+        this.fileMessageAttributesMap = fileMessageAttributesMap;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getSenderId() {
+        return senderId;
     }
 
-    public String getName() {
-        return name;
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-    public String getText() {
-        return text;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getMsgDate() {
+        return msgDate;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setMsgDate(String msgDate) {
+        this.msgDate = msgDate;
     }
 
-    public String getDate() {
-        return date;
+    public String getMsgType() {
+        return msgType;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setMsgType(String msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getMsgText() {
+        return msgText;
+    }
+
+    public void setMsgText(String msgText) {
+        this.msgText = msgText;
+    }
+
+    public Map<String, FileMessageAttributes> getFileMessageAttributesMap() {
+        return fileMessageAttributesMap;
+    }
+
+    public void setFileMessageAttributesMap(Map<String, FileMessageAttributes> fileMessageAttributesMap) {
+        this.fileMessageAttributesMap = fileMessageAttributesMap;
     }
 }
