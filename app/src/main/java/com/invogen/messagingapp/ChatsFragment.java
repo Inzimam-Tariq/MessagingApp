@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -94,6 +95,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
 
     private Context mContext;
     private String mUsername, userId;
+    private String phoneNo, name;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -181,7 +183,9 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                     holder.linearLayoutLeft.setVisibility(View.GONE);
                     holder.linearLayoutRight.setVisibility(View.VISIBLE);
                     holder.nameTVRight.setText(model.getName());
-                    holder.msgTVRight.setText(model.getText());
+                    String msgTxt = model.getText();
+                    if (msgTxt != null && !msgTxt.trim().isEmpty())
+                        holder.msgTVRight.setText(model.getText());
                     if (model.getDate() != null)
                         holder.timeTVRight.setText(model.getDate());
                     progressBar.setVisibility(View.GONE);
@@ -320,6 +324,27 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                             }
                         }
                     });
+                } else if (requestCode == AppConstants.RC_PICK_CONTACT) {
+
+                    Uri uri = data.getData();
+                    Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+
+                    if (cursor.moveToFirst()) {
+                        int phoneIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                        int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+
+                        phoneNo = cursor.getString(phoneIndex);
+                        name = cursor.getString(nameIndex);
+
+                        FriendlyMessage friendlyMessage = new FriendlyMessage(
+                                userId, mUsername, "Name: "+name + "\nCell  #: " + phoneNo, null);
+                        mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                        mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
+
+                        Log.e("onActivityResult()", phoneIndex + " " + phoneNo + " " + nameIndex + " " + name);
+                    }
+                    cursor.close();
                 }
             }
 
@@ -491,7 +516,7 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_contact: {
                 Log.e(TAG, "Clicked 7");
                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-                startActivityForResult(intent, AppConstants.RC_PICK_IMAGE);
+                startActivityForResult(intent, AppConstants.RC_PICK_CONTACT);
                 reveal = true;
                 revealAttachments();
 //                openItemPicker("contact/*", AppConstants.RC_PICK_IMAGE);
