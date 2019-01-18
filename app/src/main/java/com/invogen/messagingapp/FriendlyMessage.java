@@ -31,9 +31,10 @@ public class FriendlyMessage {
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String senderId, String senderName, String msgText) {
+    public FriendlyMessage(String senderId, String senderName, String msgType, String msgText) {
         this.senderId = senderId;
         this.senderName = senderName;
+        this.msgType = msgType;
         this.msgText = msgText;
         this.msgDate = AppUtils.getTime();
     }

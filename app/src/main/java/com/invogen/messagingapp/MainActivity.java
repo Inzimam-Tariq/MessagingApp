@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.mContext = this;
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         initViews();
         initFirebaseObjects();
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
+                    AppConstants.setUserUid(user.getUid());
                     Toast.makeText(mContext, "Users Active", Toast.LENGTH_SHORT).show();
                     FirebaseUserMetadata metadata = firebaseAuth.getCurrentUser().getMetadata();
                     Log.e("ActivityController", "\ncreation timestamp = " + metadata
@@ -192,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                             // user is now signed out
                             startActivity(new Intent(MainActivity.this,
                                     UserTypeActivity.class));
+                            AppConstants.setUserUid("");
                             finish();
                         }
                     });

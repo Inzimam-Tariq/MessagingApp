@@ -38,11 +38,12 @@ public class SplashActivity extends AppCompatActivity {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
+
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
                     String userId = user.getUid();
+                    AppConstants.setUserUid(userId);
                     mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
                             .child(userId);
                     Log.e("Splash", userId);
