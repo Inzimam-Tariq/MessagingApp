@@ -2,40 +2,65 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="10dp"
+    android:clipToPadding="false"
+    android:paddingStart="15dp"
     android:paddingLeft="15dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="60dp"
     android:paddingRight="60dp"
-    android:clipToPadding="false">
+    android:paddingBottom="10dp">
 
     <View
         android:id="@+id/avatar"
-        android:layout_alignParentLeft="true"
-        android:scaleType="centerInside"
-        android:background="@drawable/circle"
         android:layout_width="34dp"
-        android:layout_height="34dp" />
+        android:layout_height="34dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/circle"
+        android:scaleType="centerInside" />
 
-    <TextView
-        android:id="@+id/name"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@+id/avatar"
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignTop="@+id/avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="4dp"
-        android:text="Rose"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/message_body"
-        android:layout_below="@+id/name"
-        android:layout_alignLeft="@+id/name"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_toEndOf="@+id/avatar"
+        android:layout_toRightOf="@+id/avatar"
         android:background="@drawable/their_message"
-        android:paddingVertical="12dp"
-        android:paddingHorizontal="16dp"
         android:elevation="2dp"
-        android:textSize="18dp"
-        android:text="How are you doing? This is a long chatMessage that should probably wrap."
-        />
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="Rose"
+            android:textColor="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/message_body_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="How are you?"
+            android:textSize="18dp" />
+
+        <ImageView
+            android:id="@+id/message_img_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/message_time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="time" />
+
+    </LinearLayout>
+
+
 </RelativeLayout>

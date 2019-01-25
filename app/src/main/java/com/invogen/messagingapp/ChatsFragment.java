@@ -184,75 +184,56 @@ public class ChatsFragment extends Fragment implements View.OnClickListener {
                 Log.e(TAG, "userId = " + userUid);
                 String msgType = model.getMsgType();
                 Log.e(TAG, "msgType = " + msgType);
+                String senderName = model.getSenderName();
+                String msgTime = model.getMsgDate();
+
                 if (msgType.equals("plain")) {
+                    String msgTxt = model.getMsgText();
                     if (userUid != null && userUid.equals(userId)) {
-                        holder.linearLayoutLeft.setVisibility(View.GONE);
-                        holder.linearLayoutRight.setVisibility(View.VISIBLE);
-                        holder.nameTVRight.setText(model.getSenderName());
-                        String msgTxt = model.getMsgText();
-                        if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                            holder.msgTVRight.setText(msgTxt);
-                        } else {
-                            holder.msgTVRight.setVisibility(View.GONE);
-                        }
-                        holder.timeTVRight.setText(model.getMsgDate());
-                        progressBar.setVisibility(View.GONE);
-
+                        holder.theirMsgLayout.setVisibility(View.GONE);
+                        holder.msgBodyTV.setText(msgTxt);
+                        holder.msgTimeTV.setText(msgTime);
                     } else {
-                        holder.linearLayoutLeft.setVisibility(View.VISIBLE);
-                        holder.linearLayoutRight.setVisibility(View.GONE);
-                        holder.nameTVLeft.setText(model.getSenderName());
-                        String msgTxt = model.getMsgText();
-                        if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                            holder.msgTVLeft.setText(msgTxt);
-                        } else {
-                            holder.msgTVLeft.setVisibility(View.GONE);
-                        }
-                        if (model.getMsgDate() != null)
-                            holder.timeTVLeft.setText(model.getMsgDate());
-                        progressBar.setVisibility(View.GONE);
-
+                        holder.myMsgLayout.setVisibility(View.GONE);
+                        holder.senderNameTV.setText(senderName);
+                        holder.msgBodyTV.setText(msgTxt);
+                        holder.msgTimeTV.setText(msgTime);
                     }
                 } else {
-                    holder.msgTVRight.setVisibility(View.GONE);
-                    holder.msgTVLeft.setVisibility(View.GONE);
+                    holder.msgBodyTV.setVisibility(View.GONE);
+                    FileMessageAttributes fileMessageAttributes = model
+                            .getFileMessageAttributesMap().get("fileProperties");
+                    String remoteFilePath = fileMessageAttributes.getFilePath();
                     if (msgType.equals("image")) {
-                        FileMessageAttributes fileMessageAttributes = model
-                                .getFileMessageAttributesMap().get("fileProperties");
                         if (userUid != null && userUid.equals(userId)) {
-                            holder.linearLayoutLeft.setVisibility(View.GONE);
-                            holder.linearLayoutRight.setVisibility(View.VISIBLE);
+                            holder.theirMsgLayout.setVisibility(View.GONE);
+                            holder.msgTimeTV.setText(msgTime);
 
-                            holder.nameTVRight.setText(model.getSenderName());
-                            holder.timeTVRight.setText(model.getMsgDate());
-                            progressBar.setVisibility(View.GONE);
-
-                            if (fileMessageAttributes.getFilePath() != null) {
-                                Log.e("ImagePathDB", fileMessageAttributes.getFilePath());
-                                Picasso.get().load(fileMessageAttributes.getFilePath())
-                                        .into(holder.imageViewRight);
+                            if (remoteFilePath != null) {
+                                Log.e("ImagePathDB", remoteFilePath);
+                                Picasso.get().load(remoteFilePath)
+                                        .into(holder.msgIV);
                             }
                         } else {
-                            holder.linearLayoutLeft.setVisibility(View.VISIBLE);
-                            holder.linearLayoutRight.setVisibility(View.GONE);
-                            holder.nameTVLeft.setText(model.getSenderName());
-//                            String msgTxt = model.getMsgText();
-//                            if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-//                                holder.msgTVLeft.setText(msgTxt);
-//                            } else {
-//                                holder.msgTVLeft.setVisibility(View.GONE);
-//                            }
-                            holder.timeTVLeft.setText(model.getMsgDate());
-                            progressBar.setVisibility(View.GONE);
+                            holder.myMsgLayout.setVisibility(View.GONE);
+                            holder.senderNameTV.setText(senderName);
+                            holder.msgTimeTV.setText(msgTime);
 
-                            if (fileMessageAttributes.getFilePath() != null) {
-                                Log.e(TAG,"ImagePathDB"+ fileMessageAttributes.getFilePath());
-                                Picasso.get().load(fileMessageAttributes.getFilePath())
-                                        .into(holder.imageViewLeft);
+                            if (remoteFilePath != null) {
+                                Log.e("ImagePathDB", remoteFilePath);
+                                Picasso.get().load(remoteFilePath)
+                                        .into(holder.msgIV);
                             }
                         }
+                    } else if (msgType.equals("audio")) {
+
+                    } else if (msgType.equals("video")) {
+
+                    } else if (msgType.equals("doc")) {
+
                     }
                 }
+
             }
 
             @NonNull

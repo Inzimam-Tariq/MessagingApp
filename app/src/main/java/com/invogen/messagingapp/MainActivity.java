@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = "MainActivityController";
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private TabsPagerAdapter mTabsPagerAdapter;
     private Context mContext;
+    private boolean backClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,37 @@ public class MainActivity extends AppCompatActivity {
 //        mChatPhotosStorageReference = mFirebaseStorage.getReference().child("chat_photos");
     }
 
+    @Override
+    public void onBackPressed() {
+        int currentTabItem = mViewPager.getCurrentItem();
+        Log.e(TAG, "Back pressed in fragment");
+        switch (currentTabItem) {
+            case 0: {
+                GroupChatFragment.onBackPressed();
+                break;
+            }
+            case 1: {
+                mViewPager.setCurrentItem(0);
+                break;
+            }
+            default: {
+                if (backClicked) {
+                    super.onBackPressed();
+                } else {
+                    backClicked = true;
+                    Toast.makeText(mContext, "Press again to exit!", Toast.LENGTH_SHORT).show();
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        backClicked = false;
+                    }
+                }, 3000);
+            }
+        }
+
+    }
+
     private void setupAuth() {
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -91,10 +125,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    AppConstants.setUserUid(user.getUid());
+                    AppConstants.setCurrentUserUid(user.getUid());
                     Toast.makeText(mContext, "Users Active", Toast.LENGTH_SHORT).show();
                     FirebaseUserMetadata metadata = firebaseAuth.getCurrentUser().getMetadata();
-                    Log.e("ActivityController", "\ncreation timestamp = " + metadata
+                    Log.e(TAG, "\ncreation timestamp = " + metadata
                             .getCreationTimestamp() + "\nlast sign in timestamp = "
                             + metadata.getLastSignInTimestamp());
                     if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
@@ -194,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                             // user is now signed out
                             startActivity(new Intent(MainActivity.this,
                                     UserTypeActivity.class));
-                            AppConstants.setUserUid("");
+                            AppConstants.setCurrentUserUid("");
                             finish();
                         }
                     });

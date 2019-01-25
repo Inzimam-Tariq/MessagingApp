@@ -24,7 +24,7 @@ public class AppConstants {
     public static String CHAT_LOCATIONS_NODE = "chat_locations";
     public static String CHAT_CONTACTS_NODE = "chat_contacts";
 
-    private static String USER_UID;
+    private static String CURRENT_USER_UID;
 
 
     public static String getUserType() {
@@ -35,11 +35,11 @@ public class AppConstants {
         USER_TYPE = userType;
     }
 
-    public static String getUserUid() {
-        return USER_UID;
+    public static String getCurrentUserUid() {
+        return CURRENT_USER_UID;
     }
 
-    public static void setUserUid(String userUid) {
-        USER_UID = userUid;
+    public static void setCurrentUserUid(String currentUserUid) {
+        CURRENT_USER_UID = currentUserUid;
     }
 }

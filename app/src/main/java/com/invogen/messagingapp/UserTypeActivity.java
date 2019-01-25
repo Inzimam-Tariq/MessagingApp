@@ -53,8 +53,10 @@ public class UserTypeActivity extends AppCompatActivity {
 
                 if (user != null) {
                     String userId = user.getUid();
+                    AppConstants.setCurrentUserUid(user.getUid());
                     mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
                             .child(userId);
+                    mUserDatabaseReference.keepSynced(true);
                     mUserDatabaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

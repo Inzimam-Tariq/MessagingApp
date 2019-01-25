@@ -7,8 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
@@ -16,99 +14,125 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
     private String TAG = "MessageAdapter";
     private List<FriendlyMessage> msgList;
 
-    public MessageAdapter(List<FriendlyMessage> objects) {
-        this.msgList = objects;
+    public MessageAdapter(List<FriendlyMessage> messageList) {
+        this.msgList = messageList;
 
     }
 
+    @Override
+    public int getItemViewType(int position) {
+
+        String userId = AppConstants.getCurrentUserUid();
+        FriendlyMessage message = msgList.get(position);
+        String userUid = message.getSenderId();
+        Log.e(TAG,
+                "getItemViewType, Message = " + position + "\nsenderId = " + userUid +
+                        "\ncurUserId = " + userId);
+        if (userUid != null && userUid.equals(userId)) {
+            return R.layout.my_message;
+        } else {
+            return R.layout.their_message;
+        }
+
+    }
 
     @NonNull
     @Override
-    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view1 = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout
-                .item_message, viewGroup, false);
+    public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int itemViewType) {
 
-        Log.e(TAG, "onCreateViewHolder Size = " + msgList.size());
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(itemViewType, viewGroup, false);
+        Log.e(TAG, "onCreateView LayoutId = " + itemViewType + " Inside MyLayout");
+//        switch (itemViewType) {
+//            case R.layout.my_message: {
+//                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout
+//                        .my_message, viewGroup, false);
+//                Log.e(TAG, "onCreateView LayoutId = " + itemViewType + " Inside MyLayout");
+//                break;
+//            }
+//            case R.layout.their_message:{
+//                view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout
+//                        .their_message, viewGroup, false);
+//                Log.e(TAG, "onCreateView LayoutId = " + itemViewType + " Inside MyLayout");
+//                break;
+//            }
+//            default:{
+//                view = null;
+//            }
+//        }
 
-        return new MessageViewHolder(view1);
+        return new MessageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int i) {
+    public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int position) {
 
-        String userId = AppConstants.getUserUid();
+        String userId = AppConstants.getCurrentUserUid();
 
-        FriendlyMessage message = msgList.get(i);
+        FriendlyMessage message = msgList.get(position);
         String userUid = message.getSenderId();
-        Log.e(TAG, "senderId = " + userUid + "\nCurrentUserId = " + userId);
+        Log.e(TAG,
+                "onBindView, Message = " + position + "\nsenderId = " + userUid + "\ncurUserId = " + userId);
         String msgType = message.getMsgType();
         Log.e(TAG, "msgType = " + msgType);
         if (msgType.equals("plain")) {
             if (userUid != null && userUid.equals(userId)) {
-                messageViewHolder.linearLayoutLeft.setVisibility(View.GONE);
-                messageViewHolder.linearLayoutRight.setVisibility(View.VISIBLE);
-                messageViewHolder.nameTVRight.setText(message.getSenderName());
                 String msgTxt = message.getMsgText();
                 if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                    messageViewHolder.msgTVRight.setText(msgTxt);
+                    messageViewHolder.msgBodyTV.setText(msgTxt);
                 } else {
-                    messageViewHolder.msgTVRight.setVisibility(View.GONE);
+                    messageViewHolder.msgBodyTV.setText(msgTxt);
                 }
-                messageViewHolder.timeTVRight.setText(message.getMsgDate());
+                messageViewHolder.msgTimeTV.setText(message.getMsgDate());
 
             } else {
-                messageViewHolder.linearLayoutLeft.setVisibility(View.VISIBLE);
-                messageViewHolder.linearLayoutRight.setVisibility(View.GONE);
-                messageViewHolder.nameTVLeft.setText(message.getSenderName());
+                messageViewHolder.senderNameTV.setText(message.getSenderName());
                 String msgTxt = message.getMsgText();
                 if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-                    messageViewHolder.msgTVLeft.setText(msgTxt);
+                    messageViewHolder.msgBodyTV.setText(msgTxt);
                 } else {
-                    messageViewHolder.msgTVLeft.setVisibility(View.GONE);
+                    messageViewHolder.msgBodyTV.setText(msgTxt);
                 }
-                if (message.getMsgDate() != null)
-                    messageViewHolder.timeTVLeft.setText(message.getMsgDate());
-
+                messageViewHolder.msgTimeTV.setText(message.getMsgDate());
             }
-        } else {
-            messageViewHolder.msgTVRight.setVisibility(View.GONE);
-            messageViewHolder.msgTVLeft.setVisibility(View.GONE);
-            if (msgType.equals("image")) {
-                FileMessageAttributes fileMessageAttributes = message
-                        .getFileMessageAttributesMap().get("fileProperties");
-                if (userUid != null && userUid.equals(userId)) {
-                    messageViewHolder.linearLayoutLeft.setVisibility(View.GONE);
-                    messageViewHolder.linearLayoutRight.setVisibility(View.VISIBLE);
-
-                    messageViewHolder.nameTVRight.setText(message.getSenderName());
-                    messageViewHolder.timeTVRight.setText(message.getMsgDate());
-//                    progressBar.setVisibility(View.GONE);
-
-                    if (fileMessageAttributes.getFilePath() != null) {
-                        Log.e("ImagePathDB", fileMessageAttributes.getFilePath());
-                        Picasso.get().load(fileMessageAttributes.getFilePath())
-                                .into(messageViewHolder.imageViewRight);
-                    }
-                } else {
-                    messageViewHolder.linearLayoutLeft.setVisibility(View.VISIBLE);
-                    messageViewHolder.linearLayoutRight.setVisibility(View.GONE);
-                    messageViewHolder.nameTVLeft.setText(message.getSenderName());
-//                            String msgTxt = message.getMsgText();
-//                            if (msgTxt != null && !msgTxt.trim().isEmpty()) {
-//                                messageViewHolder.msgTVLeft.setText(msgTxt);
-//                            } else {
-//                                messageViewHolder.msgTVLeft.setVisibility(View.GONE);
-//                            }
-                    messageViewHolder.timeTVLeft.setText(message.getMsgDate());
-//                    progressBar.setVisibility(View.GONE);
-
-                    if (fileMessageAttributes.getFilePath() != null) {
-                        Log.e(TAG, "ImagePathDB" + fileMessageAttributes.getFilePath());
-                        Picasso.get().load(fileMessageAttributes.getFilePath())
-                                .into(messageViewHolder.imageViewLeft);
-                    }
-                }
-            }
+//        else {
+//            messageViewHolder.msgTVRight.setVisibility(View.GONE);
+//            messageViewHolder.msgTVLeft.setVisibility(View.GONE);
+//            if (msgType.equals("image")) {
+//                FileMessageAttributes fileMessageAttributes = message
+//                        .getFileMessageAttributesMap().get("fileProperties");
+//                if (userUid != null && userUid.equals(userId)) {
+//                    messageViewHolder.linearLayoutLeft.setVisibility(View.GONE);
+//                    messageViewHolder.linearLayoutRight.setVisibility(View.VISIBLE);
+//
+//                    messageViewHolder.nameTVRight.setText(message.getSenderName());
+//                    messageViewHolder.timeTVRight.setText(message.getMsgDate());
+////                    progressBar.setVisibility(View.GONE);
+//
+//                    if (fileMessageAttributes.getFilePath() != null) {
+//                        Log.e("ImagePathDB", fileMessageAttributes.getFilePath());
+//                        Picasso.get().load(fileMessageAttributes.getFilePath())
+//                                .into(messageViewHolder.imageViewRight);
+//                    }
+//                } else {
+//                    messageViewHolder.linearLayoutLeft.setVisibility(View.VISIBLE);
+//                    messageViewHolder.linearLayoutRight.setVisibility(View.GONE);
+//                    messageViewHolder.nameTVLeft.setText(message.getSenderName());
+////                            String msgTxt = message.getMsgText();
+////                            if (msgTxt != null && !msgTxt.trim().isEmpty()) {
+////                                messageViewHolder.msgTVLeft.setText(msgTxt);
+////                            } else {
+////                                messageViewHolder.msgTVLeft.setVisibility(View.GONE);
+////                            }
+//                    messageViewHolder.timeTVLeft.setText(message.getMsgDate());
+////                    progressBar.setVisibility(View.GONE);
+//
+//                    if (fileMessageAttributes.getFilePath() != null) {
+//                        Log.e(TAG, "ImagePathDB" + fileMessageAttributes.getFilePath());
+//                        Picasso.get().load(fileMessageAttributes.getFilePath())
+//                                .into(messageViewHolder.imageViewLeft);
+//                    }
+//                }
+//            }
         }
 
     }

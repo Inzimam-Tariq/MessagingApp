@@ -5,80 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/layout_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bubble_yellow"
-        android:orientation="vertical">
+    <include
+        android:id="@+id/their_msg_layout"
+        layout="@layout/their_message" />
 
-        <TextView
-            android:id="@+id/tv_name_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="Name" />
-
-        <ImageView
-            android:id="@+id/iv_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true" />
-
-        <TextView
-            android:id="@+id/tv_message_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Message" />
-
-        <TextView
-            android:id="@+id/tv_time_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="time" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:background="@drawable/bubble_green"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_name_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="Name" />
-
-        <ImageView
-            android:id="@+id/iv_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true" />
-
-        <TextView
-            android:id="@+id/tv_message_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            tools:text="Message" />
-
-        <TextView
-            android:id="@+id/tv_time_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            tools:text="time goes here" />
-    </LinearLayout>
+    <include
+        android:id="@+id/my_msg_layout"
+        layout="@layout/my_message" />
 
 </LinearLayout>
-
-
-    <!--</android.support.v7.widget.CardView>-->

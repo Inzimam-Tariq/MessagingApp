@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -108,6 +107,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_group_chat, container, false);
+        this.mContext = view.getContext();
 
         initViews(view);
 
@@ -116,6 +116,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
 
         mChatPhotosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_IMAGES_NODE);
         mMessagesDatabaseReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.MESSAGES_NODE);
+        mMessagesDatabaseReference.keepSynced(true);
 
         // Enable Send button when there's text to send
         mMessageEditText.addTextChangedListener(new TextWatcher() {
@@ -144,11 +145,13 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         messageList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
+        layoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(new MessageAdapter(messageList));
         mMessagesDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageList.clear();
 
                 Log.e(TAG, "Inside ValueEventListener, ListSize = " + messageList.size());
                 if (dataSnapshot.exists()) {
@@ -180,7 +183,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                     onSignedInInitialize(user.getDisplayName());
                     userId = user.getUid();
                     Log.e(TAG, "User Id = " + userId);
-                    AppConstants.setUserUid(userId);
+                    if (!AppConstants.getCurrentUserUid().equals(""))
+                        AppConstants.setCurrentUserUid(userId);
                 } else {
                     onSignedOutCleanup();
                     startActivityForResult(
@@ -455,7 +459,6 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                 break;
             }
             case R.id.sendButton: {
-                Log.e(TAG, "Clicked 8");
                 Log.e("InsideSendBtn", "true");
                 String msgText = mMessageEditText.getText().toString();
 
@@ -464,9 +467,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
 
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
                 // Clear input box
-                Log.e("ChatFrag SendBtn", "User Id = " + userId);
                 mMessageEditText.setText("");
-                mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount());
                 break;
             }
         }
@@ -539,6 +540,10 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                     cursor.close();
                 }
             }
+
+    }
+
+    public static void onBackPressed() {
 
     }
 

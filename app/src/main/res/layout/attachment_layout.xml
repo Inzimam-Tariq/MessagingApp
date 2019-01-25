@@ -40,7 +40,7 @@
                 android:id="@+id/btn_video"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
-                android:background="@drawable/circle"
+                android:background="@drawable/round_rec_orange_dark"
                 android:src="@drawable/ic_video" />
 
             <TextView

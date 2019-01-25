@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +27,8 @@ public class SplashActivity extends AppCompatActivity {
     private DatabaseReference mUserDatabaseReference;
     private Context mContext;
 
+    private boolean backClicked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +46,10 @@ public class SplashActivity extends AppCompatActivity {
 
                 if (user != null) {
                     String userId = user.getUid();
-                    AppConstants.setUserUid(userId);
+                    AppConstants.setCurrentUserUid(userId);
                     mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
                             .child(userId);
+                    mUserDatabaseReference.keepSynced(true);
                     Log.e("Splash", userId);
                     mUserDatabaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
@@ -97,5 +101,19 @@ public class SplashActivity extends AppCompatActivity {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
 //        finish();
+    }
+
+    public void doubleClick(View view) {
+
+        if (backClicked) {
+            recreate();
+        }
+        backClicked = true;
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                backClicked = false;
+            }
+        }, 3000);
     }
 }
