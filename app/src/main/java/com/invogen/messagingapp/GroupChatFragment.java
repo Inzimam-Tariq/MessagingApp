@@ -52,7 +52,10 @@ import com.vincent.filepicker.activity.AudioPickActivity;
 import com.vincent.filepicker.activity.ImagePickActivity;
 import com.vincent.filepicker.activity.NormalFilePickActivity;
 import com.vincent.filepicker.activity.VideoPickActivity;
+import com.vincent.filepicker.filter.entity.AudioFile;
 import com.vincent.filepicker.filter.entity.ImageFile;
+import com.vincent.filepicker.filter.entity.NormalFile;
+import com.vincent.filepicker.filter.entity.VideoFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +81,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseStorage mFirebaseStorage;
-    private StorageReference mChatPhotosStorageReference;
+    private StorageReference mChatDocsStorageReference, mChatVideosStorageReference,
+            mChatPhotosStorageReference, mChatAudiosStorageReference;
 
     private RecyclerView mRecyclerView;
     private ProgressBar progressBar;
@@ -114,7 +118,10 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
+        mChatDocsStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_DOCS_NODE);
+        mChatVideosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_VIDEOS_NODE);
         mChatPhotosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_IMAGES_NODE);
+        mChatAudiosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_AUDIOS_NODE);
         mMessagesDatabaseReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.MESSAGES_NODE);
         mMessagesDatabaseReference.keepSynced(true);
 
@@ -142,6 +149,44 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         });
 
         authenticateUser();
+
+        return view;
+    }
+
+    private void authenticateUser() {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    onSignedInInitialize(user.getDisplayName());
+                    userId = user.getUid();
+                    Log.e(TAG, "User Id = " + userId);
+                    if (!AppConstants.getCurrentUserUid().equals(""))
+                        AppConstants.setCurrentUserUid(userId);
+                    setChatData();
+                } else {
+                    onSignedOutCleanup();
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(false)
+                                    .setAvailableProviders(Arrays.asList(
+                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                            new AuthUI.IdpConfig.EmailBuilder().build(),
+                                            new AuthUI.IdpConfig.AnonymousBuilder().build()))
+                                    .build(),
+                            AppConstants.RC_SIGN_IN);
+                }
+            }
+        };
+        progressBar.setVisibility(View.GONE);
+        mMessageEditText.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(AppConstants.DEFAULT_MSG_LENGTH_LIMIT)});
+
+    }
+
+    private void setChatData() {
         messageList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
@@ -169,41 +214,6 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
 
             }
         });
-
-
-        return view;
-    }
-
-    private void authenticateUser() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    onSignedInInitialize(user.getDisplayName());
-                    userId = user.getUid();
-                    Log.e(TAG, "User Id = " + userId);
-                    if (!AppConstants.getCurrentUserUid().equals(""))
-                        AppConstants.setCurrentUserUid(userId);
-                } else {
-                    onSignedOutCleanup();
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                            new AuthUI.IdpConfig.EmailBuilder().build(),
-                                            new AuthUI.IdpConfig.AnonymousBuilder().build()))
-                                    .build(),
-                            AppConstants.RC_SIGN_IN);
-                }
-            }
-        };
-        progressBar.setVisibility(View.GONE);
-        mMessageEditText.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(AppConstants.DEFAULT_MSG_LENGTH_LIMIT)});
-
     }
 
     private void initViews(View view) {
@@ -393,7 +403,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
             }
             case R.id.btn_camera_in_et: {
                 Log.e(TAG, "Clicked camera");
-                createDirectoryAndOpenCamera();
+//                createDirectoryAndOpenCamera();
+
                 reveal = true;
                 revealAttachments();
                 break;
@@ -481,6 +492,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
             if (resultCode == RESULT_OK) {
                 if (requestCode == Constant.REQUEST_CODE_PICK_IMAGE) {
                     final ArrayList<ImageFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_IMAGE);
+                    Log.e(TAG, "image list size = " + list.size());
 
                     for (i = 0; i < list.size(); i++) {
                         final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
@@ -518,6 +530,135 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                             }
                         });
                     }
+                } else if (requestCode == Constant.REQUEST_CODE_PICK_FILE) {
+                    final ArrayList<NormalFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_FILE);
+                    Log.e(TAG, "docs list size = " + list.size());
+
+                    for (i = 0; i < list.size(); i++) {
+                        final String fileName = list.get(i).getName();
+                        final float fileSize = list.get(i).getSize();
+                        final StorageReference docsRef = mChatDocsStorageReference.child(new Date()
+                                .getTime() + fileName);
+                        Uri file = Uri.fromFile(new File(list.get(i).getPath()));
+
+                        // upload file to Firebase Storage
+                        docsRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
+                                .TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+
+                                    docsRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String downloadUrl = uri.toString();
+
+                                            Map<String, FileMessageAttributes> fileMessageAttributesMap
+                                                    = new HashMap<>();
+                                            fileMessageAttributesMap.put("fileProperties", new
+                                                    FileMessageAttributes(fileName,
+                                                    downloadUrl, fileSize));
+                                            FriendlyMessage friendlyMessage =
+                                                    new FriendlyMessage(userId, mUsername, "docs",
+                                                            fileMessageAttributesMap);
+                                            mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                                            Log.e("DownloadURL", downloadUrl);
+                                        }
+                                    });
+                                } else {
+                                    Log.e(TAG, "Error occurred while storing profile in database");
+                                }
+                            }
+                        });
+                    }
+
+                } else if (requestCode == Constant.REQUEST_CODE_PICK_VIDEO) {
+                    final ArrayList<VideoFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_VIDEO);
+                    Log.e(TAG, "videos list size = " + list.size());
+
+                    for (i = 0; i < list.size(); i++) {
+                        final String fileName = list.get(i).getName();
+                        final float fileSize = list.get(i).getSize();
+                        final StorageReference videosRef = mChatVideosStorageReference.child(new Date()
+                                .getTime() + fileName);
+                        Uri file = Uri.fromFile(new File(list.get(i).getPath()));
+
+                        // upload file to Firebase Storage
+                        videosRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
+                                .TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+
+                                    videosRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String downloadUrl = uri.toString();
+
+                                            Map<String, FileMessageAttributes> fileMessageAttributesMap
+                                                    = new HashMap<>();
+                                            fileMessageAttributesMap.put("fileProperties", new
+                                                    FileMessageAttributes(fileName,
+                                                    downloadUrl, fileSize));
+                                            FriendlyMessage friendlyMessage =
+                                                    new FriendlyMessage(userId, mUsername, "video",
+                                                            fileMessageAttributesMap);
+                                            mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                                            Log.e("DownloadURL", downloadUrl);
+                                        }
+                                    });
+                                } else {
+                                    Log.e(TAG, "Error occurred while storing video in database");
+                                }
+                            }
+                        });
+                    }
+
+                } else if (requestCode == Constant.REQUEST_CODE_PICK_AUDIO) {
+                    final ArrayList<AudioFile> list = data.getParcelableArrayListExtra(Constant.RESULT_PICK_AUDIO);
+                    Log.e(TAG, "videos list size = " + list.size());
+
+                    for (i = 0; i < list.size(); i++) {
+                        final String fileName = list.get(i).getName();
+                        final float fileSize = list.get(i).getSize();
+                        final StorageReference audiosRef = mChatAudiosStorageReference.child(new Date()
+                                .getTime() + fileName);
+                        Uri file = Uri.fromFile(new File(list.get(i).getPath()));
+
+                        // upload file to Firebase Storage
+                        audiosRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
+                                .TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                if (task.isSuccessful()) {
+
+                                    audiosRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String downloadUrl = uri.toString();
+
+                                            Map<String, FileMessageAttributes> fileMessageAttributesMap
+                                                    = new HashMap<>();
+                                            fileMessageAttributesMap.put("fileProperties", new
+                                                    FileMessageAttributes(fileName,
+                                                    downloadUrl, fileSize));
+                                            FriendlyMessage friendlyMessage =
+                                                    new FriendlyMessage(userId, mUsername, "audio",
+                                                            fileMessageAttributesMap);
+                                            mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                                            Log.e("DownloadURL", downloadUrl);
+                                        }
+                                    });
+                                } else {
+                                    Log.e(TAG, "Error occurred while storing audio in database");
+                                }
+                            }
+                        });
+                    }
+
                 } else if (requestCode == AppConstants.RC_PICK_CONTACT) {
 
                     Uri uri = data.getData();
@@ -535,7 +676,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                                         "Name: " + name + "\nCell  #: " + phoneNo);
                         mMessagesDatabaseReference.push().setValue(friendlyMessage);
 
-                        Log.e("onActivityResult()", phoneIndex + " " + phoneNo + " " + nameIndex + " " + name);
+                        Log.e(TAG,
+                                "onActivityResult(), " + phoneIndex + ", " + phoneNo + ", " + nameIndex + ", " + name);
                     }
                     cursor.close();
                 }

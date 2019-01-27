@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.mContext = this;
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         initViews();
         initFirebaseObjects();
@@ -80,41 +79,48 @@ public class MainActivity extends AppCompatActivity {
     private void initFirebaseObjects() {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-//        mFirebaseDatabase = FirebaseDatabase.getInstance();
-//        mFirebaseStorage = FirebaseStorage.getInstance();
-
-//        mMessagesDatabaseReference = mFirebaseDatabase.getReference().child("messages");
-//        mChatPhotosStorageReference = mFirebaseStorage.getReference().child("chat_photos");
     }
 
     @Override
     public void onBackPressed() {
         int currentTabItem = mViewPager.getCurrentItem();
         Log.e(TAG, "Back pressed in fragment");
-        switch (currentTabItem) {
-            case 0: {
-                GroupChatFragment.onBackPressed();
-                break;
-            }
-            case 1: {
-                mViewPager.setCurrentItem(0);
-                break;
-            }
-            default: {
-                if (backClicked) {
-                    super.onBackPressed();
-                } else {
-                    backClicked = true;
-                    Toast.makeText(mContext, "Press again to exit!", Toast.LENGTH_SHORT).show();
-                }
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        backClicked = false;
-                    }
-                }, 3000);
-            }
+//        switch (currentTabItem) {
+//            case 0: {
+//                GroupChatFragment.onBackPressed();
+//                break;
+//            }
+//            case 1: {
+//                mViewPager.setCurrentItem(0);
+//                break;
+//            }
+//            default: {
+//                if (backClicked) {
+//                    super.onBackPressed();
+//                } else {
+//                    backClicked = true;
+//                    Toast.makeText(mContext, "Press again to exit!", Toast.LENGTH_SHORT).show();
+//                }
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        backClicked = false;
+//                    }
+//                }, 3000);
+//            }
+//        }
+        if (backClicked) {
+            super.onBackPressed();
+        } else {
+            backClicked = true;
+            Toast.makeText(mContext, "Press again to exit!", Toast.LENGTH_SHORT).show();
         }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                backClicked = false;
+            }
+        }, 3000);
 
     }
 
@@ -184,10 +190,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
     @Override
     protected void onResume() {
@@ -222,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
         if (item.getItemId() == R.id.menu_logout) {
             AuthUI.getInstance()
-                    .signOut(this)
+                    .signOut(MainActivity.this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
                             // user is now signed out

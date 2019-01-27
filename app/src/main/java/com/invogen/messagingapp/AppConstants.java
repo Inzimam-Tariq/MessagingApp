@@ -24,6 +24,12 @@ public class AppConstants {
     public static String CHAT_LOCATIONS_NODE = "chat_locations";
     public static String CHAT_CONTACTS_NODE = "chat_contacts";
 
+    public static String PLAIN_MESSAGE = "plain";
+    public static String DOC_MESSAGE = "doc";
+    public static String VIDEO_MESSAGE = "video";
+    public static String IMAGE_MESSAGE = "image";
+    public static String AUDIO_MESSAGE = "audio";
+
     private static String CURRENT_USER_UID;
 
 
