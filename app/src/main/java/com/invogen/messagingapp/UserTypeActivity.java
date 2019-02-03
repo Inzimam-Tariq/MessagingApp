@@ -98,7 +98,7 @@ public class UserTypeActivity extends AppCompatActivity {
 
 
     public void controllerClicked(View view) {
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(getApplicationContext(), MainActivityControllerDrawer.class));
         AppConstants.setUserType("controller");
         Toast.makeText(mContext, "Users Type Controller!", Toast.LENGTH_LONG).show();
         AppUtils.finishActivity(UserTypeActivity.this);

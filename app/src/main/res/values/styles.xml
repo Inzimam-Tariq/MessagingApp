@@ -22,14 +22,14 @@
 
     <!-- Base application theme. -->
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
-        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
+    <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+    <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+    <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+    <!--<item name="colorAccent">@color/colorAccent</item>-->
 
-        <!--&lt;!&ndash;<item name="android:colorButtonNormal">@drawable/button_selector</item>&ndash;&gt;-->
-        <!--<item name="colorButtonNormal">@drawable/button_selector</item>-->
-        <!--<item name="android:buttonStyle">@style/FriendlyButtonStyle</item>-->
+    <!--&lt;!&ndash;<item name="android:colorButtonNormal">@drawable/button_selector</item>&ndash;&gt;-->
+    <!--<item name="colorButtonNormal">@drawable/button_selector</item>-->
+    <!--<item name="android:buttonStyle">@style/FriendlyButtonStyle</item>-->
     <!--</style>-->
 
     <style name="FriendlyButtonStyle" parent="Widget.AppCompat.Button">
@@ -37,25 +37,25 @@
     </style>
 
     <!--<style name="LibAppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
-        <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
-        <!--<item name="colorAccent">@color/colorAccent</item>-->
-        <!--<item name="android:colorBackground">@android:color/background_light</item>-->
-        <!--<item name="android:windowBackground">@android:color/white</item>-->
+    <!--&lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+    <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+    <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+    <!--<item name="colorAccent">@color/colorAccent</item>-->
+    <!--<item name="android:colorBackground">@android:color/background_light</item>-->
+    <!--<item name="android:windowBackground">@android:color/white</item>-->
     <!--</style>-->
 
     <!--<style name="PickerTabLayout" parent="Widget.Design.TabLayout">-->
-        <!--<item name="tabBackground">@color/colorPrimary</item>-->
-        <!--<item name="tabGravity">fill</item>-->
-        <!--<item name="tabMaxWidth">0dp</item>-->
+    <!--<item name="tabBackground">@color/colorPrimary</item>-->
+    <!--<item name="tabGravity">fill</item>-->
+    <!--<item name="tabMaxWidth">0dp</item>-->
     <!--</style>-->
 
     <!--<style name="SmoothCheckBoxStyle">-->
-        <!--<item name="color_checked">@color/checkbox_color</item>-->
-        <!--<item name="color_unchecked">@android:color/white</item>-->
-        <!--<item name="color_unchecked_stroke">@color/checkbox_unchecked_color</item>-->
-        <!--<item name="color_tick">@android:color/white</item>-->
+    <!--<item name="color_checked">@color/checkbox_color</item>-->
+    <!--<item name="color_unchecked">@android:color/white</item>-->
+    <!--<item name="color_unchecked_stroke">@color/checkbox_unchecked_color</item>-->
+    <!--<item name="color_tick">@android:color/white</item>-->
     <!--</style>-->
 
 </resources>

@@ -34,9 +34,9 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         this.mContext = this;
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase.setPersistenceEnabled(true);
+
         mFirebaseAuth = FirebaseAuth.getInstance();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -59,7 +59,7 @@ public class SplashActivity extends AppCompatActivity {
                             String userType = dataSnapshot.child("user_type").getValue().toString();
                             AppConstants.setUserType(userType);
                             if (userType.equals("controller")) {
-                                startActivity(new Intent(mContext, MainActivity.class));
+                                startActivity(new Intent(mContext, MainActivityControllerDrawer.class));
                                 AppUtils.finishActivity(SplashActivity.this);
                             } else {
                                 startActivity(new Intent(mContext, MainActivityViewer.class));
