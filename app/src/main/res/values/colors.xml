@@ -11,5 +11,6 @@
     <color name="colorGreen">#10E81F</color>
     <color name="colorKadu">#61b667</color>
     <color name="colorPurple">#633ea1</color>
+    <color name="colorPurple_trans">#cc633ea1</color>
     <color name="colorOrang">#f49828</color>
 </resources>

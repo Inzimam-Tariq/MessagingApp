@@ -15,7 +15,6 @@
  */
 package com.invogen.messagingapp;
 
-import java.util.List;
 import java.util.Map;
 
 public class FriendlyMessage {
@@ -25,6 +24,8 @@ public class FriendlyMessage {
     private String msgDate;
     private String msgType;
     private String msgText;
+    private boolean isRemoved;
+    private String removedBy;
 
     private Map<String, FileMessageAttributes> fileMessageAttributesMap;
 
@@ -47,6 +48,17 @@ public class FriendlyMessage {
         this.msgType = msgType;
         this.fileMessageAttributesMap = fileMessageAttributesMap;
     }
+
+//    public FriendlyMessage(String senderId, String senderName, String msgType,
+//                           boolean isRemoved, String msgText, String removedBy) {
+//        this.senderId = senderId;
+//        this.senderName = senderName;
+//        this.msgDate = AppUtils.getTime();
+//        this.msgType = msgType;
+//        this.msgText = msgText;
+//        this.isRemoved = isRemoved;
+//        this.removedBy = removedBy;
+//    }''
 
     public String getSenderId() {
         return senderId;
@@ -86,6 +98,22 @@ public class FriendlyMessage {
 
     public void setMsgText(String msgText) {
         this.msgText = msgText;
+    }
+
+    public boolean getIsRemoved() {
+        return isRemoved;
+    }
+
+    public void setIsRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
+    public String getRemovedBy() {
+        return removedBy;
+    }
+
+    public void setRemovedBy(String removedBy) {
+        this.removedBy = removedBy;
     }
 
     public Map<String, FileMessageAttributes> getFileMessageAttributesMap() {

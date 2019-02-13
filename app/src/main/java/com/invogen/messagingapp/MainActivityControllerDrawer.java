@@ -1,6 +1,7 @@
 package com.invogen.messagingapp;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,16 +12,20 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +60,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     private DatabaseReference mProfilesDBReference, mUsersDBReference;
 
     private Toolbar mToolbar;
+
     private NavigationView navigationView;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -67,6 +73,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
             R.drawable.ic_users_white,
             R.drawable.ic_attach_file
     };
+    private SearchView searchView;
 
 
     @Override
@@ -75,6 +82,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
         setContentView(R.layout.activity_main_controller_drawer);
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        mToolbar.setTitle(R.string.app_name);
         this.mContext = this;
 
         initViews();
@@ -115,6 +123,10 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (searchView != null && !searchView.isIconified()) {
+            searchView.setIconified(true);
+//            findViewById(R.id.default_title).setVisibility(View.VISIBLE);
+        }
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -154,6 +166,49 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main_controller, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+
+        if (searchItem != null) {
+            searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    //some operation
+                    return true;
+                }
+            });
+            searchView.setOnSearchClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //some operation
+                }
+            });
+            EditText searchPlate = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+            searchPlate.setHint("Search");
+            View searchPlateView = searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
+            searchPlateView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+            // use this method for search process
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    // use this method when query submitted
+                    Toast.makeText(mContext, query, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    // use this method for auto complete search process
+                    return false;
+                }
+            });
+            SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        }
+
+
         return true;
     }
 

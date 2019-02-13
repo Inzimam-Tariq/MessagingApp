@@ -1,8 +1,10 @@
 package com.invogen.messagingapp;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,16 +17,23 @@ import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> implements View.OnClickListener {
+public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder>
+        implements View.OnClickListener {
+
+    private AdapterLongClickCallback mAdapterLongClickCallback;
+
+    public interface AdapterLongClickCallback {
+        void onMethodLongClickCallback(int position);
+    }
+
 
     private String TAG = "MessageAdapter";
     private List<FriendlyMessage> msgList;
@@ -35,39 +44,78 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> impl
     private FloatingActionButton play_button;
     private Context mContext;
     private RelativeLayout mainLayout;
+    int selectedPosition = -1;
 
-    public MessageAdapter(List<FriendlyMessage> messageList) {
+
+    public MessageAdapter(List<FriendlyMessage> messageList, AdapterLongClickCallback callback) {
         this.msgList = messageList;
-
+        this.mAdapterLongClickCallback = callback;
     }
 
     @Override
     public int getItemViewType(int position) {
 
-//        String currentUserUid = AppConstants.getCurrentUserUid();
         FriendlyMessage message = msgList.get(position);
-//        String senderId = message.getSenderId();
         boolean isSenderCurrentUser =
                 AppConstants.getCurrentUserUid().equals(message.getSenderId());
         String msgType = message.getMsgType();
+        boolean isRemoved = message.getIsRemoved();
+        Log.e(TAG, "Message = " + position
+                + "\nsenderName = " + message.getSenderName()
+                + "\nsenderId = " + message.getSenderId()
+                + "\ncurrentUserId = " + AppConstants.getCurrentUserUid()
+                + "\nMessageDate = " + message.getMsgDate()
+                + "\nmessageType = " + msgType
+                + "\nMessageText = " + message.getMsgText()
+                + "\nisRemoved = " + message.getIsRemoved()
+                + "\nremovedBy = " + message.getRemovedBy()
+        );
 
         if (isSenderCurrentUser) {
-            if (msgType.equals(AppConstants.DOC_MESSAGE)) return R.layout.my_message_plain;
-            else if (msgType.equals(AppConstants.VIDEO_MESSAGE)) return R.layout.my_message_video;
-            else if (msgType.equals(AppConstants.IMAGE_MESSAGE)) return R.layout.my_message_image;
-            else if (msgType.equals(AppConstants.AUDIO_MESSAGE)) return R.layout.my_message_audio;
-            else return R.layout.my_message_plain;
+            if (isRemoved) {
+                Log.e(TAG, " inCondition = Removed, sender = current user");
+                return R.layout.my_message_deleted;
+            } else {
+                if (msgType.equals(AppConstants.DOC_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 1, sender = current user");
+                    return R.layout.my_message_plain;
+                } else if (msgType.equals(AppConstants.VIDEO_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 2, sender = current user");
+                    return R.layout.my_message_video;
+                } else if (msgType.equals(AppConstants.IMAGE_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 3, sender = current user");
+                    return R.layout.my_message_image;
+                } else if (msgType.equals(AppConstants.AUDIO_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 4, sender = current user");
+                    return R.layout.my_message_audio;
+                } else {
+                    Log.e(TAG, " inCondition = not Removed 5, sender = current user");
+                    return R.layout.my_message_plain;
+                }
+            }
         } else {
-            if (msgType.equals(AppConstants.DOC_MESSAGE)) return R.layout.their_message_plain;
-            else if (msgType.equals(AppConstants.VIDEO_MESSAGE))
-                return R.layout.their_message_video;
-            else if (msgType.equals(AppConstants.IMAGE_MESSAGE))
-                return R.layout.their_message_image;
-            else if (msgType.equals(AppConstants.AUDIO_MESSAGE))
-                return R.layout.their_message_audio;
-            else return R.layout.their_message_plain;
+            if (isRemoved) {
+                Log.e(TAG, " inCondition = Removed, sender = not current user");
+                return R.layout.their_message_deleted;
+            } else {
+                if (msgType.equals(AppConstants.DOC_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 1, sender = not current user");
+                    return R.layout.their_message_plain;
+                } else if (msgType.equals(AppConstants.VIDEO_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 2, sender = not current user");
+                    return R.layout.their_message_video;
+                } else if (msgType.equals(AppConstants.IMAGE_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 3, sender = not current user");
+                    return R.layout.their_message_image;
+                } else if (msgType.equals(AppConstants.AUDIO_MESSAGE)) {
+                    Log.e(TAG, " inCondition = not Removed 4, sender = not current user");
+                    return R.layout.their_message_audio;
+                } else {
+                    Log.e(TAG, " inCondition = not Removed 5, sender = not current user");
+                    return R.layout.their_message_plain;
+                }
+            }
         }
-
     }
 
     @NonNull
@@ -81,73 +129,119 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> impl
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageViewHolder messageViewHolder, int position) {
+    public void onBindViewHolder(@NonNull final MessageViewHolder holder, int position) {
+        mContext = holder.msgTimeTV.getContext();
 
         String currentUserUid = AppConstants.getCurrentUserUid();
-        mContext = messageViewHolder.msgTimeTV.getContext();
-        mainLayout = messageViewHolder.messageMainLayout;
+        mainLayout = holder.messageMainLayout;
 
         FriendlyMessage message = msgList.get(position);
-        String senderId = message.getSenderId();
+        final String senderId = message.getSenderId();
         String msgType = message.getMsgType();
+        Log.e(TAG, "msgType = " + msgType);
 
-        boolean isSenderCurrentUser = senderId.equals(currentUserUid);
-        Log.e(TAG,
-                "onBindView, Message = " + position + "\nsenderId = " + senderId + "\ncurUserId = " + currentUserUid);
+        String removedBy = message.getRemovedBy();
+        Log.e(TAG, "Message = " + removedBy);
+        Log.e(TAG, " isRemoved = " + message.getIsRemoved());
+
+        final boolean isSenderCurrentUser = senderId.equals(currentUserUid);
+        Log.e(TAG, "Msg pos = " + position + ", isSender CurrentUser: " + isSenderCurrentUser);
 
         if (!isSenderCurrentUser) {
-            messageViewHolder.senderNameTV.setText(message.getSenderName());
+            holder.senderNameTV.setText(message.getSenderName());
         }
-        messageViewHolder.msgTimeTV.setText(message.getMsgDate());
-        Log.e(TAG, "msgType = " + msgType);
-        if (msgType.equals("plain")) {
-            messageViewHolder.msgBodyTV.setText(message.getMsgText());
-        } else {
+        holder.msgTimeTV.setText(message.getMsgDate());
 
-            FileMessageAttributes fileMessageAttributes = message
-                    .getFileMessageAttributesMap().get("fileProperties");
-            String remoteFilePath = fileMessageAttributes.getFilePath();
-            switch (msgType) {
-                case "image":
-                    if (remoteFilePath != null) {
-                        Log.e("ImagePathDB", remoteFilePath);
-                        Picasso.get().load(remoteFilePath)//.networkPolicy(NetworkPolicy.OFFLINE)
-                                .placeholder(R.drawable.loading)
-                                .into(messageViewHolder.msgIV);
-                    }
-                    break;
-                case "video":
-                    if (remoteFilePath != null) {
-                        Log.e("VideoPathDB", remoteFilePath);
-                        VideoView videoView = messageViewHolder.msgVV;
+        if (!message.getIsRemoved()) {
+            if (msgType.equals("plain")) {
+                holder.msgBodyTV.setText(message.getMsgText());
+            } else {
+                FileMessageAttributes fileMessageAttributes = message
+                        .getFileMessageAttributesMap().get("fileProperties");
+                String remoteFilePath = fileMessageAttributes.getFilePath();
 
-                        try {
-                            // Start the MediaController
-                            MediaController mediacontroller =
-                                    new MediaController(mContext);
-                            mediacontroller.setAnchorView(videoView);
+                switch (msgType) {
+                    case "image":
+                        if (remoteFilePath != null) {
+                            Log.e("ImagePathDB", remoteFilePath);
 
-                            Uri videoUri = Uri.parse(remoteFilePath);
-                            videoView.setMediaController(mediacontroller);
-                            videoView.setVideoURI(videoUri);
-                            videoView.seekTo(10);
+                            File mediaStorageDir = new File(Environment.getExternalStorageDirectory()
+                                    , "AI Eye Images 1");
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            if (!mediaStorageDir.exists()) {
+                                if (!mediaStorageDir.mkdirs()) {
+                                    Log.d("App", "failed to create directory");
+                                }
+                            } else {
+                                Log.e(TAG, "Path = " + mediaStorageDir.getAbsolutePath());
+                            }
+
+                            File folder = mContext.getFilesDir();
+                            File f = new File(folder, "AI Eye Images");
+                            boolean isCreated = f.mkdir();
+
+                            if (isCreated) {
+                                Log.e(TAG, "Path = " + f.getAbsolutePath());
+                            } else {
+                                Log.e(TAG, "Path can't be created");
+                            }
+
+                            Picasso.get().load(remoteFilePath)//.networkPolicy(NetworkPolicy.OFFLINE)
+                                    .placeholder(R.drawable.loading)
+                                    .into(holder.msgIV);
                         }
-                    }
-                    break;
-                case "doc":
+                        break;
+                    case "video":
+                        if (remoteFilePath != null) {
+                            Log.e("VideoPathDB", remoteFilePath);
+                            VideoView videoView = holder.msgVV;
 
-                    break;
-                case "audio":
-                    seek_bar = messageViewHolder.seekBar;
-                    play_button = messageViewHolder.playBtn;
-                    setupMediaPlayer(remoteFilePath);
-                    play_button.setOnClickListener(this);
-                    break;
+                            try {
+                                // Start the MediaController
+                                MediaController mediacontroller =
+                                        new MediaController(mContext);
+                                mediacontroller.setAnchorView(videoView);
+
+                                Uri videoUri = Uri.parse(remoteFilePath);
+                                videoView.setMediaController(mediacontroller);
+                                videoView.setVideoURI(videoUri);
+                                videoView.seekTo(10);
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
+                    case "doc":
+
+                        break;
+                    case "audio":
+                        seek_bar = holder.seekBar;
+                        play_button = holder.playBtn;
+                        setupMediaPlayer(remoteFilePath);
+                        play_button.setOnClickListener(this);
+                        break;
+                }
             }
         }
+
+        if (selectedPosition == position)
+            holder.itemView.setBackgroundColor(mContext.getResources().getColor(R.color.colorPurple_trans));
+        else
+            holder.itemView.setBackgroundColor(Color.parseColor("#00f49828"));
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int pos = holder.getAdapterPosition();
+                selectedPosition = pos;
+                notifyDataSetChanged();
+                mAdapterLongClickCallback.onMethodLongClickCallback(pos);
+//                return true;
+                Log.e(TAG, "Long Clicked at position = " + pos);
+                return false;
+            }
+        });
 
     }
 
@@ -191,7 +285,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> impl
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.play_button:
+            case R.id.play_button: {
                 Log.e(TAG, "Inside Play Clicked");
                 if (!isPlaying) {
                     if (playReady) {
@@ -216,6 +310,38 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> impl
                     player.pause();
                 }
                 break;
+            }
         }
     }
+
+//    @Override
+//    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//        Log.e(TAG, "Long Clicked at position = " + position);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+//        builder.setTitle("Confirm");
+//        builder.setMessage("Are you sure want to Update Record?");
+//        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//                // Do nothing
+//                dialog.dismiss();
+//            }
+//        });
+//
+//        AlertDialog alert = builder.create();
+//        alert.show();
+//        return false;
+//    }
+
 }

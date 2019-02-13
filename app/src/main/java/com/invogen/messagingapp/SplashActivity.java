@@ -35,7 +35,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         this.mContext = this;
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseDatabase.setPersistenceEnabled(true);
+//        mFirebaseDatabase.setPersistenceEnabled(true);
 
         mFirebaseAuth = FirebaseAuth.getInstance();
 

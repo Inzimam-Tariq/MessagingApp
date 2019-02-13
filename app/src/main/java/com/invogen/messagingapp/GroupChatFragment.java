@@ -7,6 +7,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,9 +30,9 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -74,7 +75,15 @@ import static com.vincent.filepicker.activity.VideoPickActivity.IS_NEED_CAMERA;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupChatFragment extends Fragment implements View.OnClickListener {
+public class GroupChatFragment extends Fragment implements View.OnClickListener, MessageAdapter.AdapterLongClickCallback {
+
+    @Override
+    public void onMethodLongClickCallback(int position) {
+        this.itemPosition = position;
+        messageSelectedOptionBarLayout.setVisibility(View.VISIBLE);
+        Log.e(TAG, "You selected item at position = " + position);
+    }
+
 
     private final String TAG = "GroupChatsFragment";
     private DatabaseReference mMessagesDatabaseReference;
@@ -90,6 +99,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
     private FloatingActionButton mSendButton;
     private ImageButton attachmentBtn, cameraBtn;
     private List<FriendlyMessage> messageList;
+    private List<String> messageKeyList;
 
     private Intent intent;
     private ImageButton btnDocument, btnCamera, btnGallery, btnAudio, btnLocation, btnContact;
@@ -99,16 +109,23 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
     private Context mContext;
     private String mUsername, userId;
     private String phoneNo, name;
-    private int i;
+    private int i, itemPosition;
+
+    // messageSelectedOptionBar
+    private RelativeLayout messageSelectedOptionBarLayout;
+    private ImageView closeBtnIV, forwardBtnIV, deleteBtnIV;
+
+    private boolean isInSelectionMode;
+
 
     public GroupChatFragment() {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_group_chat, container, false);
         this.mContext = view.getContext();
@@ -188,21 +205,23 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
 
     private void setChatData() {
         messageList = new ArrayList<>();
+        messageKeyList = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false);
         layoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(new MessageAdapter(messageList));
+        mRecyclerView.setAdapter(new MessageAdapter(messageList, this));
         mMessagesDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageList.clear();
-
-                Log.e(TAG, "Inside ValueEventListener, ListSize = " + messageList.size());
                 if (dataSnapshot.exists()) {
                     Log.e(TAG, "Snapshot Exits");
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         FriendlyMessage msg = ds.getValue(FriendlyMessage.class);
+                        messageKeyList.add(ds.getKey());
+
+                        Log.e(TAG, "Message Key = " + ds.getKey());
                         messageList.add(msg);
                     }
                 }
@@ -232,6 +251,11 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         btnContact = view.findViewById(R.id.btn_contact);
         attachmentContainer = view.findViewById(R.id.attachment_container);
 
+        messageSelectedOptionBarLayout = view.findViewById(R.id.message_option_bar_layout);
+        closeBtnIV = view.findViewById(R.id.close_ib);
+        forwardBtnIV = view.findViewById(R.id.forward_ib);
+        deleteBtnIV = view.findViewById(R.id.delete_ib);
+
         btnDocument.setVisibility(View.GONE);
         btnCamera.setVisibility(View.GONE);
         btnGallery.setVisibility(View.GONE);
@@ -255,6 +279,10 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         btnLocation.setOnClickListener(this);
         btnContact.setOnClickListener(this);
         mSendButton.setOnClickListener(this);
+
+        closeBtnIV.setOnClickListener(this);
+        forwardBtnIV.setOnClickListener(this);
+        deleteBtnIV.setOnClickListener(this);
     }
 
     @Override
@@ -363,9 +391,9 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
         // pics taken by the camera using this application.
         if (StorageHelper.isExternalStorageReadableAndWritable()) {
             dirPath = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES) + "/picFolder/";
+                    Environment.DIRECTORY_PICTURES) + "/AI Eye Pics/";
         } else {
-            dirPath = "" + mContext.getCacheDir() + "/picFolder/";
+            dirPath = "" + mContext.getCacheDir() + "/AI Eye Pics/";
         }
         File newdir = new File(dirPath);
         boolean mkdirs = newdir.mkdirs();
@@ -403,7 +431,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
             }
             case R.id.btn_camera_in_et: {
                 Log.e(TAG, "Clicked camera");
-//                createDirectoryAndOpenCamera();
+                createDirectoryAndOpenCamera();
 
                 reveal = true;
                 revealAttachments();
@@ -481,6 +509,40 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                 mMessageEditText.setText("");
                 break;
             }
+            case R.id.close_ib: {
+                Log.e("InsideCloseBtn", "true");
+                messageSelectedOptionBarLayout.setVisibility(View.GONE);
+
+                break;
+            }
+            case R.id.forward_ib: {
+                Log.e("InsideCloseBtn", "true");
+                messageSelectedOptionBarLayout.setVisibility(View.GONE);
+                break;
+            }
+            case R.id.delete_ib: {
+
+                Log.e("InsideDeleteBtn",
+                        "true position = " + itemPosition + "messageId = " + messageKeyList.get(itemPosition));
+                mRecyclerView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(itemPosition);
+                        if (null != holder) {
+                            holder.itemView.setBackgroundColor(Color.parseColor("#00f49828"));
+                        }
+                    }
+                }, 50);
+                messageSelectedOptionBarLayout.setVisibility(View.GONE);
+//                mMessagesDatabaseReference.child(messageKeyList.get(itemPosition)).removeValue();
+
+                mMessagesDatabaseReference.child(messageKeyList.get(itemPosition)).child(
+                        "removedBy").setValue(AppConstants.getCurrentUserUid());
+                mMessagesDatabaseReference.child(messageKeyList.get(itemPosition)).child(
+                        "isRemoved").setValue(true);
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+                break;
+            }
         }
     }
 
@@ -495,9 +557,10 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                     Log.e(TAG, "image list size = " + list.size());
 
                     for (i = 0; i < list.size(); i++) {
-                        final StorageReference photoRef = mChatPhotosStorageReference.child(new Date()
-                                .getTime() + list.get(i).getName());
+                        final StorageReference photoRef = mChatPhotosStorageReference.child(list.get(i).getName());
                         Uri file = Uri.fromFile(new File(list.get(i).getPath()));
+                        final String fileName = list.get(i).getName();
+                        final float fileSize = list.get(i).getSize();
 
                         // upload file to Firebase Storage
                         photoRef.putFile(file).addOnCompleteListener(new OnCompleteListener<UploadTask
@@ -514,8 +577,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
                                             Map<String, FileMessageAttributes> fileMessageAttributesMap
                                                     = new HashMap<>();
                                             fileMessageAttributesMap.put("fileProperties", new
-                                                    FileMessageAttributes(list.get(0).getName(),
-                                                    downloadUrl, list.get(0).getSize()));
+                                                    FileMessageAttributes(fileName,
+                                                    downloadUrl, fileSize));
                                             FriendlyMessage friendlyMessage =
                                                     new FriendlyMessage(userId, mUsername, "image",
                                                             fileMessageAttributesMap);
@@ -686,6 +749,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener 
     }
 
     public static void onBackPressed() {
+
 
     }
 

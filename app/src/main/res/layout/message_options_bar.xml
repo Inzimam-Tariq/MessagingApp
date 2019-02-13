@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/message_option_bar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    android:clipToPadding="false"
+    android:paddingStart="10dp"
+    android:paddingLeft="10dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="40dp"
+    android:paddingRight="40dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:paddingBottom="10dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    <ImageView
+        android:id="@+id/close_ib"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_close_white" />
+
+    <ImageView
+        android:id="@+id/forward_ib"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
+        android:layout_toStartOf="@id/delete_ib"
+        android:layout_toLeftOf="@id/delete_ib"
+        android:src="@drawable/ic_forward_white" />
+
+    <ImageView
+        android:id="@+id/delete_ib"
+        android:layout_width="36dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:src="@drawable/ic_delete_white" />
+
+</RelativeLayout>

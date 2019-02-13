@@ -37,7 +37,7 @@ public class AppUtils {
         Date c = Calendar.getInstance().getTime();
         System.out.println("Current time => " + c);
 
-        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH-mm");
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm");
         return df.format(c);
     }
 
@@ -45,6 +45,11 @@ public class AppUtils {
         Random rnd = new Random();
         //                holder.nameTVLeft.setTextColor(color);
         return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+    }
+
+
+    public static boolean isSDCardPresent() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
 }
