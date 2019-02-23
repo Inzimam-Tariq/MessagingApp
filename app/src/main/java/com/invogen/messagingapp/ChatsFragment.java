@@ -34,7 +34,7 @@ public class ChatsFragment extends Fragment {
     private final String TAG = "ChatsFragment";
     private FloatingActionButton fabCreate;
     private RecyclerView mRecyclerView;
-    private List<String> chatRoomList = new ArrayList<>();
+    private List<Chats> chatRoomList = new ArrayList<>();
     private Context mContext;
     private String chatName;
     private DatabaseReference mDBReferenceChats;
@@ -96,10 +96,10 @@ public class ChatsFragment extends Fragment {
                 if (dataSnapshot.exists()) {
                     Log.e(TAG, "Snapshot Exits\nValue = " + dataSnapshot.toString());
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        Chats msg = ds.getValue(Chats.class);
+                        Chats chat = ds.getValue(Chats.class);
 
                         Log.e(TAG, "Message Key = " + ds.getKey());
-                        chatRoomList.add(msg.getChatName());
+                        chatRoomList.add(chat);
                     }
                 }
                 mRecyclerView.getAdapter().notifyDataSetChanged();

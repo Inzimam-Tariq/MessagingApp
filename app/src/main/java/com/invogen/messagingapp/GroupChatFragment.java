@@ -93,7 +93,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
             mChatPhotosStorageReference, mChatAudiosStorageReference;
 
     private RecyclerView mRecyclerView;
-//    private ProgressBar progressBar;
+    //    private ProgressBar progressBar;
     private EditText mMessageEditText;
     private FloatingActionButton mSendButton;
     private ImageButton attachmentBtn, cameraBtn;
@@ -163,6 +163,8 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
             public void afterTextChanged(Editable editable) {
             }
         });
+        mMessageEditText.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(AppConstants.DEFAULT_MSG_LENGTH_LIMIT)});
 
         authenticateUser();
 
@@ -181,25 +183,9 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
                     if (!AppConstants.getCurrentUserUid().equals(""))
                         AppConstants.setCurrentUserUid(userId);
                     setChatData();
-                } else {
-                    onSignedOutCleanup();
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setIsSmartLockEnabled(false)
-                                    .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                            new AuthUI.IdpConfig.EmailBuilder().build(),
-                                            new AuthUI.IdpConfig.AnonymousBuilder().build()))
-                                    .build(),
-                            AppConstants.RC_SIGN_IN);
                 }
             }
         };
-//        progressBar.setVisibility(View.GONE);
-        mMessageEditText.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(AppConstants.DEFAULT_MSG_LENGTH_LIMIT)});
-
     }
 
     private void setChatData() {

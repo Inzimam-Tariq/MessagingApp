@@ -251,14 +251,25 @@ public class MainActivityControllerDrawer extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+
         if (id == R.id.nav_gen_qr_code) {
-            // Handle the camera action
+            startActivity(new Intent(getApplicationContext(), GenerateQRCodeActivity.class));
         } else if (id == R.id.nav_scan_qr_code) {
-
+            startActivity(new Intent(getApplicationContext(), ScanQRCodeActivity.class));
         } else if (id == R.id.nav_logout) {
-
+            AuthUI.getInstance()
+                    .signOut(mContext)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            // user is now signed out
+                            startActivity(new Intent(mContext,
+                                    UserTypeActivity.class));
+                            AppConstants.setCurrentUserUid("");
+                            finish();
+                        }
+                    });
         } else if (id == R.id.nav_manage) {
-
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -301,7 +312,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Auth Listener Active", Toast.LENGTH_SHORT).show();
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     AppConstants.setCurrentUserUid(user.getUid());

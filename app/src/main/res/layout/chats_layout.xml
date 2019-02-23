@@ -9,8 +9,8 @@
 
     <View
         android:id="@+id/avatar"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
@@ -19,14 +19,16 @@
 
     <TextView
         android:id="@+id/avatar_tv"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_centerVertical="true"
         android:gravity="center"
         android:maxLength="1"
         android:text="time"
         android:textAllCaps="true"
-        android:textColor="@color/colorWhite" />
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold" />
 
 
     <LinearLayout
@@ -73,8 +75,8 @@
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="60dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:background="@android:color/darker_gray" />
 
 
 </RelativeLayout>
