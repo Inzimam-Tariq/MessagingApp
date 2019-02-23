@@ -26,7 +26,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class FriendsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private DatabaseReference dbReference;
+    private DatabaseReference dbReferenceUsers;
     private FirebaseRecyclerAdapter<Users, FindFriendsViewHolder> adapter;
 
     public FriendsFragment() {
@@ -39,7 +39,7 @@ public class FriendsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
-        dbReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.USERS_NODE);
+        dbReferenceUsers = FirebaseDatabase.getInstance().getReference().child(AppConstants.USERS_NODE);
 
 
         initViews(view);
@@ -48,7 +48,7 @@ public class FriendsFragment extends Fragment {
 
         FirebaseRecyclerOptions<Users> options =
                 new FirebaseRecyclerOptions.Builder<Users>()
-                        .setQuery(dbReference, Users.class)
+                        .setQuery(dbReferenceUsers, Users.class)
                         .build();
 
         adapter = new FirebaseRecyclerAdapter<Users, FindFriendsViewHolder>(options) {
@@ -57,12 +57,14 @@ public class FriendsFragment extends Fragment {
                                             @NonNull Users model) {
                 holder.username.setText(model.getUser_name());
                 holder.userStatus.setText(model.getUser_status());
-                if (!model.getUser_image().isEmpty())
+                String userImage = model.getUser_image();
+                if (userImage != null && !userImage.isEmpty()) {
                     Picasso.get().load(model.getUser_image())
                             .placeholder(R.drawable.default_user_img)
                             .error(R.drawable.default_user_img)
                             .resize(85, 85)
                             .into(holder.profileImageView);
+                }
             }
 
             @NonNull

@@ -20,6 +20,7 @@ import android.widget.SeekBar;
 import android.widget.VideoView;
 
 import com.squareup.picasso.Picasso;
+import com.vincan.medialoader.MediaLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -202,9 +203,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder>
                                         new MediaController(mContext);
                                 mediacontroller.setAnchorView(videoView);
 
-                                Uri videoUri = Uri.parse(remoteFilePath);
+//                                Uri videoUri = Uri.parse(remoteFilePath);
                                 videoView.setMediaController(mediacontroller);
-                                videoView.setVideoURI(videoUri);
+//                                videoView.setVideoURI(videoUri);
+                                String proxyUrl = MediaLoader.getInstance(mContext).getProxyUrl(remoteFilePath);
+                                videoView.setVideoPath(proxyUrl);
                                 videoView.seekTo(10);
 
                             } catch (Exception e) {
@@ -218,7 +221,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder>
                     case "audio":
                         seek_bar = holder.seekBar;
                         play_button = holder.playBtn;
-                        setupMediaPlayer(remoteFilePath);
+                        String proxyUrl = MediaLoader.getInstance(mContext).getProxyUrl(remoteFilePath);
+                        setupMediaPlayer(proxyUrl);
                         play_button.setOnClickListener(this);
                         break;
                 }

@@ -34,6 +34,10 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />
 
+            <!--<ScrollView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
+
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
@@ -41,6 +45,8 @@
                     android:background="?attr/colorPrimary"
                     app:layout_scrollFlags="scroll|enterAlways|snap"
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            <!--</ScrollView>-->
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -54,17 +60,10 @@
             app:tabMode="fixed" />
 
 
-
     </android.support.design.widget.AppBarLayout>
 
-    <!--<include layout="@layout/content_main_activity_controller_drawer" />-->
+    <include layout="@layout/content_main_activity_controller_drawer" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

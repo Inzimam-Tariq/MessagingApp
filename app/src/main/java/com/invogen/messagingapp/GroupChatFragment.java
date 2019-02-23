@@ -31,7 +31,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.firebase.ui.auth.AuthUI;
@@ -94,7 +93,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
             mChatPhotosStorageReference, mChatAudiosStorageReference;
 
     private RecyclerView mRecyclerView;
-    private ProgressBar progressBar;
+//    private ProgressBar progressBar;
     private EditText mMessageEditText;
     private FloatingActionButton mSendButton;
     private ImageButton attachmentBtn, cameraBtn;
@@ -139,7 +138,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
         mChatVideosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_VIDEOS_NODE);
         mChatPhotosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_IMAGES_NODE);
         mChatAudiosStorageReference = mFirebaseStorage.getReference().child(AppConstants.CHAT_AUDIOS_NODE);
-        mMessagesDatabaseReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.MESSAGES_NODE);
+        mMessagesDatabaseReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.COMMON_CHAT_ROOM_NODE);
         mMessagesDatabaseReference.keepSynced(true);
 
         // Enable Send button when there's text to send
@@ -197,7 +196,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
                 }
             }
         };
-        progressBar.setVisibility(View.GONE);
+//        progressBar.setVisibility(View.GONE);
         mMessageEditText.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(AppConstants.DEFAULT_MSG_LENGTH_LIMIT)});
 
@@ -237,7 +236,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
 
     private void initViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycle_view);
-        progressBar = view.findViewById(R.id.progressBar);
+//        progressBar = view.findViewById(R.id.progressBar);
         attachmentBtn = view.findViewById(R.id.btn_attachment);
         cameraBtn = view.findViewById(R.id.btn_camera_in_et);
         mMessageEditText = view.findViewById(R.id.messageEditText);
@@ -251,7 +250,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
         btnContact = view.findViewById(R.id.btn_contact);
         attachmentContainer = view.findViewById(R.id.attachment_container);
 
-        messageSelectedOptionBarLayout = view.findViewById(R.id.message_option_bar_layout);
+        messageSelectedOptionBarLayout = view.findViewById(R.id.selection_option_layout);
         closeBtnIV = view.findViewById(R.id.close_ib);
         forwardBtnIV = view.findViewById(R.id.forward_ib);
         deleteBtnIV = view.findViewById(R.id.delete_ib);
@@ -450,7 +449,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
             }
             case R.id.btn_video: {
                 Log.e(TAG, "Clicked 3");
-                createDirectoryAndOpenCamera();
+//                createDirectoryAndOpenCamera();
                 intent = new Intent(mContext, VideoPickActivity.class);
                 intent.putExtra(IS_NEED_CAMERA, true);
                 intent.putExtra(Constant.MAX_NUMBER, 9);
@@ -600,8 +599,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
                     for (i = 0; i < list.size(); i++) {
                         final String fileName = list.get(i).getName();
                         final float fileSize = list.get(i).getSize();
-                        final StorageReference docsRef = mChatDocsStorageReference.child(new Date()
-                                .getTime() + fileName);
+                        final StorageReference docsRef = mChatDocsStorageReference.child(fileName);
                         Uri file = Uri.fromFile(new File(list.get(i).getPath()));
 
                         // upload file to Firebase Storage
@@ -643,8 +641,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
                     for (i = 0; i < list.size(); i++) {
                         final String fileName = list.get(i).getName();
                         final float fileSize = list.get(i).getSize();
-                        final StorageReference videosRef = mChatVideosStorageReference.child(new Date()
-                                .getTime() + fileName);
+                        final StorageReference videosRef = mChatVideosStorageReference.child(fileName);
                         Uri file = Uri.fromFile(new File(list.get(i).getPath()));
 
                         // upload file to Firebase Storage
@@ -686,8 +683,7 @@ public class GroupChatFragment extends Fragment implements View.OnClickListener,
                     for (i = 0; i < list.size(); i++) {
                         final String fileName = list.get(i).getName();
                         final float fileSize = list.get(i).getSize();
-                        final StorageReference audiosRef = mChatAudiosStorageReference.child(new Date()
-                                .getTime() + fileName);
+                        final StorageReference audiosRef = mChatAudiosStorageReference.child(fileName);
                         Uri file = Uri.fromFile(new File(list.get(i).getPath()));
 
                         // upload file to Firebase Storage

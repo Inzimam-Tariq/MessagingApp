@@ -42,7 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nabinbhandari.android.permissions.PermissionHandler;
 import com.nabinbhandari.android.permissions.Permissions;
-import com.rohitarya.picasso.facedetection.transformation.FaceCenterCrop;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
@@ -69,9 +68,9 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     private boolean backClicked;
 
     private int[] tabIcons = {
-            R.drawable.ic_chat_white,
-            R.drawable.ic_users_white,
-            R.drawable.ic_attach_file
+            R.drawable.ic_chat_room,
+            R.drawable.ic_person_chat,
+            R.drawable.ic_persons
     };
     private SearchView searchView;
 
@@ -98,7 +97,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
 
     private void initViews() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        mToolbar = findViewById(R.id.main_toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.nav_view);
         mViewPager = findViewById(R.id.viewpager);
         mTabLayout = findViewById(R.id.tabs);
@@ -252,11 +251,11 @@ public class MainActivityControllerDrawer extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_gen_qr_code) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_scan_qr_code) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_logout) {
 
         } else if (id == R.id.nav_manage) {
 
@@ -274,8 +273,8 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerNavActivityAdapter adapter = new ViewPagerNavActivityAdapter(getSupportFragmentManager());
         adapter.addFragment(new GroupChatFragment(), "Chat Room");
+        adapter.addFragment(new ChatsFragment(), "Chats");
         adapter.addFragment(new FriendsFragment(), "Users");
-        adapter.addFragment(new Fragment(), "Empty");
         viewPager.setAdapter(adapter);
     }
 

@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
 
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -64,6 +65,9 @@ dependencies {
 
     // Lib for File Picker
     implementation 'com.vincent.filepicker:MultiTypeFilePicker:1.0.8'
+
+    // Lib for caching media files
+    implementation 'com.vincan:medialoader:1.0.0'
 
 //    // Lib for circular reveal effect
 //    implementation ('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
