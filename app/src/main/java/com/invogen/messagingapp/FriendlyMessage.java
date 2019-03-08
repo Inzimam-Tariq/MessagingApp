@@ -15,9 +15,13 @@
  */
 package com.invogen.messagingapp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.Map;
 
-public class FriendlyMessage {
+public class FriendlyMessage implements Serializable {
 
     private String senderId;
     private String senderName;
@@ -123,4 +127,5 @@ public class FriendlyMessage {
     public void setFileMessageAttributesMap(Map<String, FileMessageAttributes> fileMessageAttributesMap) {
         this.fileMessageAttributesMap = fileMessageAttributesMap;
     }
+
 }

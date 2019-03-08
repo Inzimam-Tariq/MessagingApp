@@ -14,8 +14,9 @@ public class AppConstants {
     // Tables Related
     public static String USERS_NODE = "users";
     public static String PROFILES_NODE = "profiles";
-//    public static String COMMON_CHAT_ROOM_NODE = "common_chatroom";
+    //    public static String COMMON_CHAT_ROOM_NODE = "common_chatroom";
     public static String COMMON_CHAT_ROOM_NODE = "common_chatroom";
+    public static String PRIVATE_CHAT_NODE = "private_chats";
     public static String CHATS_NODE = "Chats";
     public static String PROFILE_IMAGES_NODE = "profile_images";
     public static String CHAT_DOCS_NODE = "chat_documents";

@@ -39,6 +39,7 @@ public class FriendsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
 
+
         dbReferenceUsers = FirebaseDatabase.getInstance().getReference().child(AppConstants.USERS_NODE);
 
 
@@ -78,6 +79,8 @@ public class FriendsFragment extends Fragment {
         };
         mRecyclerView.setAdapter(adapter);
         adapter.startListening();
+
+        AppUtils.hideKeyboard(getActivity());
 
         return view;
     }
@@ -121,6 +124,7 @@ public class FriendsFragment extends Fragment {
             username = itemView.findViewById(R.id.tv_username);
             userStatus = itemView.findViewById(R.id.tv_user_status);
             profileImageView = itemView.findViewById(R.id.users_profile_image);
+
         }
     }
 }

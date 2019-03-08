@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Chats {
     private String chatName;
+    private String chatDate;
     List<Users> participantList;
     List<FriendlyMessage> messageList;
 
@@ -12,6 +13,12 @@ public class Chats {
 
     public Chats(String chatName) {
         this.chatName = chatName;
+        this.chatDate = AppUtils.getTime();
+    }
+
+    public Chats(String chatName, List<FriendlyMessage> messageList) {
+        this.chatName = chatName;
+        this.messageList = messageList;
     }
 
     public Chats(String chatName, List<Users> participantList, List<FriendlyMessage> messageList) {
@@ -27,6 +34,14 @@ public class Chats {
 
     public void setChatName(String chatName) {
         this.chatName = chatName;
+    }
+
+    public String getChatDate() {
+        return chatDate;
+    }
+
+    public void setChatDate(String chatDate) {
+        this.chatDate = chatDate;
     }
 
     public List<Users> getParticipantList() {

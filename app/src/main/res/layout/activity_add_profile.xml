@@ -6,59 +6,80 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/iv_user_pic"
-        android:layout_width="wrap_content"
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/default_user_img" />
+        android:indeterminate="true"
+        android:max="100"
+        android:visibility="gone" />
 
     <TextView
-        android:id="@+id/tv_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/iv_user_pic"
-        android:layout_centerHorizontal="true"
-        android:text="Username"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
-    <TextView
-        android:id="@+id/tv_user_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_username"
-        android:layout_centerHorizontal="true"
-        android:text="Profile Status" />
-
-    <Button
-        android:id="@+id/btn_add_profile"
+        android:id="@+id/progress_bar_status_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="10dp"
-        android:background="@color/colorPrimary"
-        android:text="Add Profile"
-        android:textColor="@color/colorWhite" />
+        android:layout_below="@id/progress_bar"
+        android:gravity="center" />
 
-    <Button
-        android:id="@+id/change_pic_btn"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btn_add_profile"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:layout_marginBottom="10dp"
-        android:background="@color/colorPrimary"
-        android:text="Add/Change Picture"
-        android:textColor="@color/colorWhite" />
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:paddingStart="56dp"
+        android:paddingEnd="56dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/iv_user_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:src="@drawable/default_user_img" />
+
+            <Button
+                android:id="@+id/choose_img_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimary"
+                android:text="Choose Image"
+                android:textColor="@color/colorWhite" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/person_name_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Person Name Here" />
+            </android.support.design.widget.TextInputLayout>
+
+            <Spinner
+                android:id="@+id/spinner1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/btn_dropdown"
+                android:spinnerMode="dropdown" />
+
+            <Button
+                android:id="@+id/save_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@color/colorPrimary"
+                android:text="Save Profile"
+                android:textColor="@color/colorWhite" />
+
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

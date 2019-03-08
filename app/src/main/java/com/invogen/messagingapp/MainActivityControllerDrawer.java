@@ -256,6 +256,10 @@ public class MainActivityControllerDrawer extends AppCompatActivity
             startActivity(new Intent(getApplicationContext(), GenerateQRCodeActivity.class));
         } else if (id == R.id.nav_scan_qr_code) {
             startActivity(new Intent(getApplicationContext(), ScanQRCodeActivity.class));
+        } else if (id == R.id.nav_manage) {
+            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+        } else if (id == R.id.nav_profiles) {
+            startActivity(new Intent(getApplicationContext(), ProfilesActivity.class));
         } else if (id == R.id.nav_logout) {
             AuthUI.getInstance()
                     .signOut(mContext)
@@ -268,8 +272,6 @@ public class MainActivityControllerDrawer extends AppCompatActivity
                             finish();
                         }
                     });
-        } else if (id == R.id.nav_manage) {
-            startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

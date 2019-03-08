@@ -46,11 +46,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder>
     private Context mContext;
     private RelativeLayout mainLayout;
     int selectedPosition = -1;
+//    private boolean isSourceCommonChatRoom = true;
 
 
-    public MessageAdapter(List<FriendlyMessage> messageList, AdapterLongClickCallback callback) {
+    public MessageAdapter(List<FriendlyMessage> messageList, AdapterLongClickCallback callback
+                          ) {
         this.msgList = messageList;
         this.mAdapterLongClickCallback = callback;
+//        this.isSourceCommonChatRoom = isSourceCommonChatRoom;
     }
 
     @Override

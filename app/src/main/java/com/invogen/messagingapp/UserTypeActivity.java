@@ -45,39 +45,40 @@ public class UserTypeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (AppUtils.isInternetAvailable())
+            mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+                @Override
+                public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                    Toast.makeText(mContext, "Listener Active", Toast.LENGTH_SHORT).show();
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if (user != null) {
-                    String userId = user.getUid();
-                    AppConstants.setCurrentUserUid(user.getUid());
-                    mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
-                            .child(userId);
-                    mUserDatabaseReference.keepSynced(true);
-                    mUserDatabaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            String userType = dataSnapshot.child("user_type").getValue().toString();
-                            AppConstants.setUserType(userType);
-                            if (userType.equals("controller")) {
-                                controllerClicked(new View(mContext));
-                            } else {
-                                viewerClicked(new View(mContext));
+                    if (user != null) {
+                        String userId = user.getUid();
+                        AppConstants.setCurrentUserUid(user.getUid());
+                        mUserDatabaseReference = mFirebaseDatabase.getReference().child(AppConstants.USERS_NODE)
+                                .child(userId);
+                        mUserDatabaseReference.keepSynced(true);
+                        mUserDatabaseReference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String userType = dataSnapshot.child("user_type").getValue().toString();
+                                AppConstants.setUserType(userType);
+                                if (userType.equals("controller")) {
+                                    controllerClicked(new View(mContext));
+                                } else {
+                                    viewerClicked(new View(mContext));
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                    Toast.makeText(getApplicationContext(), "Already Logged In!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        Toast.makeText(getApplicationContext(), "Already Logged In!", Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-        };
+            };
     }
 
     @Override

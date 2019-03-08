@@ -17,6 +17,16 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_main_controller_drawer">MainActivityControllerDrawer</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+
+    <string-array name="user_circle_array">
+        <item>Select…</item>
+        <item>Family</item>
+        <item>Friends</item>
+        <item>Workers</item>
+        <item>Relatives</item>
+        <item>Other</item>
+    </string-array>
 
 
 </resources>

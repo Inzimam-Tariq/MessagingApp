@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Settings" />
         <item
+            android:id="@+id/nav_profiles"
+            android:icon="@drawable/ic_user"
+            android:title="Profiles" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_exit_to_app_black"
             android:title="Logout" />

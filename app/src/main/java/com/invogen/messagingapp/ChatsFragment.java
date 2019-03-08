@@ -34,10 +34,12 @@ public class ChatsFragment extends Fragment {
     private final String TAG = "ChatsFragment";
     private FloatingActionButton fabCreate;
     private RecyclerView mRecyclerView;
-    private List<Chats> chatRoomList = new ArrayList<>();
+    private List<Chats> chatRoomChatsList = new ArrayList<>();
+    private List<String> chatRoomKeysList = new ArrayList<>();
     private Context mContext;
     private String chatName;
-    private DatabaseReference mDBReferenceChats;
+    private DatabaseReference mChatsDBReference;
+    private String pushKey;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -52,7 +54,7 @@ public class ChatsFragment extends Fragment {
         this.mContext = view.getContext();
         initViews(view);
 
-        mDBReferenceChats = FirebaseDatabase.getInstance().getReference().child(AppConstants.CHATS_NODE);
+        mChatsDBReference = FirebaseDatabase.getInstance().getReference().child(AppConstants.CHATS_NODE);
         fabCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,10 +68,15 @@ public class ChatsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         chatName = input_et.getText().toString();
+
                         Chats chats = new Chats(chatName);
 
-                        String pushKey = mDBReferenceChats.push().getKey();
-                        mDBReferenceChats.child(pushKey).setValue(chats);
+                        pushKey = mChatsDBReference.push().getKey();
+                        mChatsDBReference.child(pushKey).setValue(chats);
+                        mChatsDBReference.child(pushKey).child("messages").push().setValue(new FriendlyMessage(
+                                "DP8LZ4XnAPOrb9x5fdgj8SBPrIs2",
+                                "Inzimam Tariq", AppConstants.PLAIN_MESSAGE, "Hello, this is test " +
+                                "message"));
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -84,26 +91,25 @@ public class ChatsFragment extends Fragment {
             }
         });
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL, false);
-        layoutManager.setStackFromEnd(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(new ChatAdapter(chatRoomList));
-        mDBReferenceChats.addValueEventListener(new ValueEventListener() {
+        mRecyclerView.setAdapter(new ChatAdapter(chatRoomChatsList, chatRoomKeysList));
+        mChatsDBReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                chatRoomList.clear();
+                chatRoomChatsList.clear();
+                chatRoomKeysList.clear();
                 if (dataSnapshot.exists()) {
                     Log.e(TAG, "Snapshot Exits\nValue = " + dataSnapshot.toString());
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         Chats chat = ds.getValue(Chats.class);
 
-                        Log.e(TAG, "Message Key = " + ds.getKey());
-                        chatRoomList.add(chat);
+                        Log.e(TAG, "Chat Key = " + ds.getKey() + "\n DataSnapshot = " + ds.toString());
+                        chatRoomChatsList.add(chat);
+                        chatRoomKeysList.add(ds.getKey());
                     }
                 }
                 mRecyclerView.getAdapter().notifyDataSetChanged();
-
             }
 
             @Override
@@ -118,6 +124,8 @@ public class ChatsFragment extends Fragment {
     private void initViews(View view) {
         mRecyclerView = view.findViewById(R.id.recycle_view);
         fabCreate = view.findViewById(R.id.fab);
+
+        AppUtils.hideKeyboard(getActivity());
     }
 
 }
