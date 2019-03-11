@@ -2,11 +2,15 @@ package com.invogen.messagingapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -74,6 +78,28 @@ public class AppUtils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static void showInternetAlert(Context mContext) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext,
+                R.style.Theme_AppCompat_Light_Dialog_Alert);
+        builder.setTitle("Attention!");
+
+        builder.setMessage("Please Check Your Internet Connection & Try Again!");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
     }
 
 }

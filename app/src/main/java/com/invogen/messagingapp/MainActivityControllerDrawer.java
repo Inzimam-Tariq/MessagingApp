@@ -418,7 +418,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
                                     .setAvailableProviders(Arrays.asList(
                                             new AuthUI.IdpConfig.GoogleBuilder().build(),
                                             new AuthUI.IdpConfig.EmailBuilder().build(),
-                                            new AuthUI.IdpConfig.AnonymousBuilder().build()))
+                                            new AuthUI.IdpConfig.PhoneBuilder().build()))
                                     .build(),
                             AppConstants.RC_SIGN_IN);
                 }

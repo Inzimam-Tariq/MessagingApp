@@ -45,7 +45,7 @@ public class UserTypeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (AppUtils.isInternetAvailable())
+//        if (AppUtils.isInternetAvailable()) {
             mAuthStateListener = new FirebaseAuth.AuthStateListener() {
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -79,6 +79,9 @@ public class UserTypeActivity extends AppCompatActivity {
                     }
                 }
             };
+//        } else {
+//            AppUtils.showInternetAlert(mContext);
+//        }
     }
 
     @Override
@@ -99,17 +102,25 @@ public class UserTypeActivity extends AppCompatActivity {
 
 
     public void controllerClicked(View view) {
-        startActivity(new Intent(getApplicationContext(), MainActivityControllerDrawer.class));
-        AppConstants.setUserType("controller");
-        Toast.makeText(mContext, "Users Type Controller!", Toast.LENGTH_LONG).show();
-        AppUtils.finishActivity(UserTypeActivity.this);
+//        if (AppUtils.isInternetAvailable()) {
+            startActivity(new Intent(getApplicationContext(), MainActivityControllerDrawer.class));
+            AppConstants.setUserType("controller");
+            Toast.makeText(mContext, "Users Type Controller!", Toast.LENGTH_LONG).show();
+            AppUtils.finishActivity(UserTypeActivity.this);
+//        } else {
+//            AppUtils.showInternetAlert(mContext);
+//        }
     }
 
     public void viewerClicked(View view) {
-        startActivity(new Intent(getApplicationContext(), MainActivityViewer.class));
-        AppConstants.setUserType("viewer");
-        Toast.makeText(mContext, "Users Type Viewer!", Toast.LENGTH_LONG).show();
-        AppUtils.finishActivity(UserTypeActivity.this);
+//        if (AppUtils.isInternetAvailable()) {
+            startActivity(new Intent(getApplicationContext(), MainActivityViewer.class));
+            AppConstants.setUserType("viewer");
+            Toast.makeText(mContext, "Users Type Viewer!", Toast.LENGTH_LONG).show();
+            AppUtils.finishActivity(UserTypeActivity.this);
+//        } else {
+//            AppUtils.showInternetAlert(mContext);
+//        }
     }
 
 }
