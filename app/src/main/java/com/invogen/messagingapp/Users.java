@@ -2,11 +2,16 @@ package com.invogen.messagingapp;
 
 public class Users {
 
-    private String user_name, user_status, user_image, user_email, user_type, user_circle;
+    private String user_uid, user_name, user_status, user_image, user_email, user_type, user_circle;
 //    private List<String> friend_list;
 
     public Users() {
 
+    }
+
+    public Users(String user_uid, String user_name) {
+        this.user_uid = user_uid;
+        this.user_name = user_name;
     }
 
     public Users(String user_name, String user_image, String user_circle) {
@@ -23,6 +28,14 @@ public class Users {
         this.user_email = user_email;
         this.user_type = user_type;
 //        this.friend_list = friend_list;
+    }
+
+    public String getUser_uid() {
+        return user_uid;
+    }
+
+    public void setUser_uid(String user_uid) {
+        this.user_uid = user_uid;
     }
 
     public String getUser_name() {

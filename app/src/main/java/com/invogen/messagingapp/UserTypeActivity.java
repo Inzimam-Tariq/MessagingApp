@@ -45,7 +45,7 @@ public class UserTypeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-//        if (AppUtils.isInternetAvailable()) {
+        if (AppUtils.isNetworkAvailable(mContext)) {
             mAuthStateListener = new FirebaseAuth.AuthStateListener() {
                 @Override
                 public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -79,9 +79,9 @@ public class UserTypeActivity extends AppCompatActivity {
                     }
                 }
             };
-//        } else {
-//            AppUtils.showInternetAlert(mContext);
-//        }
+        } else {
+            AppUtils.showInternetAlert(mContext);
+        }
     }
 
     @Override
@@ -102,25 +102,25 @@ public class UserTypeActivity extends AppCompatActivity {
 
 
     public void controllerClicked(View view) {
-//        if (AppUtils.isInternetAvailable()) {
-            startActivity(new Intent(getApplicationContext(), MainActivityControllerDrawer.class));
+        if (AppUtils.isNetworkAvailable(mContext)) {
+            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
             AppConstants.setUserType("controller");
             Toast.makeText(mContext, "Users Type Controller!", Toast.LENGTH_LONG).show();
             AppUtils.finishActivity(UserTypeActivity.this);
-//        } else {
-//            AppUtils.showInternetAlert(mContext);
-//        }
+        } else {
+            AppUtils.showInternetAlert(mContext);
+        }
     }
 
     public void viewerClicked(View view) {
-//        if (AppUtils.isInternetAvailable()) {
+        if (AppUtils.isNetworkAvailable(mContext)) {
             startActivity(new Intent(getApplicationContext(), MainActivityViewer.class));
             AppConstants.setUserType("viewer");
             Toast.makeText(mContext, "Users Type Viewer!", Toast.LENGTH_LONG).show();
             AppUtils.finishActivity(UserTypeActivity.this);
-//        } else {
-//            AppUtils.showInternetAlert(mContext);
-//        }
+        } else {
+            AppUtils.showInternetAlert(mContext);
+        }
     }
 
 }

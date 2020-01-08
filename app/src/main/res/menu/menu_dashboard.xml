@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_settings"
+        android:title="Settings" />
+    <item
+        android:id="@+id/menu_generate_qr"
+        android:title="Generate QR" />
+    <item
+        android:id="@+id/menu_scan_qr"
+        android:title="Scan QR" />
+    <item
+        android:id="@+id/menu_logout"
+        android:title="Logout" />
+</menu>

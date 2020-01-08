@@ -11,7 +11,6 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -100,7 +99,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
         mToolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.nav_view);
         mViewPager = findViewById(R.id.viewpager);
-        mTabLayout = findViewById(R.id.tabs);
+        mTabLayout = findViewById(R.id.tab_layout);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -184,6 +183,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
                 }
             });
             EditText searchPlate = searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+//            EditText searchPlate = searchView.findViewById(android.support.v7.appcompat.R);
             searchPlate.setHint("Search");
             View searchPlateView = searchView.findViewById(android.support.v7.appcompat.R.id.search_plate);
             searchPlateView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
@@ -233,7 +233,8 @@ public class MainActivityControllerDrawer extends AppCompatActivity
                     });
         }
         if (id == R.id.menu_scan_qr) {
-            startActivity(new Intent(getApplicationContext(), ScanQRCodeActivity.class));
+            startActivity(new Intent(getApplicationContext(), DashboardActivity.class));
+//            startActivity(new Intent(getApplicationContext(), ScanQRCodeActivity.class));
         }
         if (id == R.id.menu_generate_qr) {
             startActivity(new Intent(getApplicationContext(), GenerateQRCodeActivity.class));
@@ -286,15 +287,15 @@ public class MainActivityControllerDrawer extends AppCompatActivity
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerNavActivityAdapter adapter = new ViewPagerNavActivityAdapter(getSupportFragmentManager());
         adapter.addFragment(new GroupChatFragment(), "Chat Room");
-        adapter.addFragment(new ChatsFragment(), "Chats");
+//        adapter.addFragment(new ChatsFragment(), "Chats");
         adapter.addFragment(new FriendsFragment(), "Users");
         viewPager.setAdapter(adapter);
     }
 
     private void setUpTabIcons() {
         mTabLayout.getTabAt(0).setIcon(tabIcons[0]);
-        mTabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        mTabLayout.getTabAt(2).setIcon(tabIcons[2]);
+//        mTabLayout.getTabAt(1).setIcon(tabIcons[1]);
+        mTabLayout.getTabAt(1).setIcon(tabIcons[2]);
     }
 
     private void checkPermissions() {
@@ -324,7 +325,7 @@ public class MainActivityControllerDrawer extends AppCompatActivity
                             .getCreationTimestamp() + "\nlast sign in timestamp = "
                             + metadata.getLastSignInTimestamp());
                     if (metadata.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
-                        // The user is new, show them a fancy intro screen!
+                        // The user is new, show them a fancy intro screen or save user data!
                         mProfilesDBReference = mFirebaseDatabase.getReference()
                                 .child(AppConstants.PROFILES_NODE).child(user.getUid());
 
